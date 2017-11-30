@@ -9,8 +9,18 @@ var TYPES_OF_HOUSES = ['flat', 'house', 'bungalo'];
 var COUNT_GUESTS = 3; // максимальное количество гостей в одной комнате
 var TIMES_CHECK_IN_OUT = ['12:00', '13:00', '14:00'];
 var TYPES_OF_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var MIN_INITIAL_ADDRESS_X = 300;
+var MAX_INITIAL_ADDRESS_X = 900;
+var MIN_INITIAL_ADDRESS_Y = 100;
+var MAX_INITIAL_ADDRESS_Y = 500;
+var MIN_COUNT_ROOMS = 1;
+var MAX_COUNT_ROOMS = 5;
+var MIN_PRICE = 1000;
+var MAX_PRICE = 1000000;
 var MAP_PIN_WIDTH_HALF = 20;
 var MAP_PIN_HEIGHT_PLUS10 = 50;
+var OPTIONS_NUMBERS_OF_ROOMS = ['комната', 'комнаты', 'комнат'];
+var OPTIONS_NUMBERS_OF_GUESTS = ['гостя', 'гостей', 'гостей'];
 // Функция для получения целого случайного числа в заданном диапазоне
 function getRandomIntegerValue(minValue, maxValue) {
   return Math.round(Math.random() * (maxValue - minValue) + minValue);
@@ -44,10 +54,10 @@ function getArrayAdverts() {
   for (var i = 0; i < AUTHORS_COUNT; i++) {
     randomValue = getRandomIntegerValue(0, numbers.length - 1);
     randomValueTitle = getRandomIntegerValue(0, numbersHouses.length - 1);
-    randomValueAddressX = getRandomIntegerValue(300, 900);
-    randomValueAddressY = getRandomIntegerValue(100, 500);
+    randomValueAddressX = getRandomIntegerValue(MIN_INITIAL_ADDRESS_X, MAX_INITIAL_ADDRESS_X);
+    randomValueAddressY = getRandomIntegerValue(MIN_INITIAL_ADDRESS_Y, MAX_INITIAL_ADDRESS_Y);
     randomValueTypes = getRandomIntegerValue(0, TYPES_OF_HOUSES.length - 1);
-    randomValueRooms = getRandomIntegerValue(1, 5);
+    randomValueRooms = getRandomIntegerValue(MIN_COUNT_ROOMS, MAX_COUNT_ROOMS);
     randomValueCheckIn = getRandomIntegerValue(0, TIMES_CHECK_IN_OUT.length - 1);
     randomValueCheckOut = getRandomIntegerValue(0, TIMES_CHECK_IN_OUT.length - 1);
     array.push(
@@ -58,7 +68,7 @@ function getArrayAdverts() {
           offer: {
             title: numbersHouses[randomValueTitle],
             address: INITIAL_ADDRESS_X + randomValueAddressX + ' ' + INITIAL_ADDRESS_Y + randomValueAddressY,
-            price: getRandomIntegerValue(1000, 1000000),
+            price: getRandomIntegerValue(MIN_PRICE, MAX_PRICE),
             type: TYPES_OF_HOUSES[randomValueTypes],
             rooms: randomValueRooms,
             guests: getRandomIntegerValue(1, randomValueRooms * COUNT_GUESTS),
@@ -96,41 +106,44 @@ function declOfNum(number, titles) {
   var cases = [2, 0, 1, 1, 1, 2];
   return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
 }
+// Функция для определения заголовка
+function getTitleDependOnType(type) {
+  var obj = {
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalo: 'Бунгало'
+  };
+  return obj[type];
+}
+// Функция заполнения объявления, созданного из шаблона, данными из параметра advert
+function addAdvertOnMap(advert) {
+  advertElement.querySelector('h3').textContent = advert.offer.title;
+  var paragraphs = advertElement.querySelectorAll('p');
+  paragraphs[0].textContent = advert.offer.address;
+  paragraphs[1].innerHTML = '' + advert.offer.price + '&#x20bd;/ночь';
+  paragraphs[2].textContent = '' + advert.offer.rooms + ' ' + declOfNum(advert.offer.rooms, OPTIONS_NUMBERS_OF_ROOMS) + ' для ' + advert.offer.guests + ' ' + declOfNum(advert.offer.guests, OPTIONS_NUMBERS_OF_GUESTS);
+  paragraphs[3].textContent = 'Заезд после ' + advert.offer.checkin + ',' + ' выезд до ' + advert.offer.checkout;
+  paragraphs[4].textContent = advert.offer.description;
+  advertElement.querySelector('h4').textContent = getTitleDependOnType(advert.offer.type);
+  advertElement.querySelector('.popup__avatar').setAttribute('src', advert.autor.avatar);
+  var featuresElement = advertElement.querySelector('.popup__features');
+  // надо очистить все элементы li которые содержались изначально в шаблоне
+  featuresElement.innerHTML = '';
+  var fragment = document.createDocumentFragment();
+  advert.offer.features.forEach(function (v, i, arr) {
+    var li = document.createElement('li');
+    li.className = 'feature feature--' + arr[i];
+    fragment.appendChild(li);
+  });
+  featuresElement.appendChild(fragment);
+}
 var adverts = getArrayAdverts();
 document.querySelector('.map').classList.remove('map--faded');
 var mapPinsBlock = document.querySelector('.map__pins');
 addMapPins(adverts);
 var advertsTemplate = document.querySelector('template').content;
 var advertElement = advertsTemplate.cloneNode(true);
-advertElement.querySelector('h3').textContent = adverts[0].offer.title;
-var paragraphs = advertElement.querySelectorAll('p');
-paragraphs[0].textContent = adverts[0].offer.address;
-paragraphs[1].innerHTML = '' + adverts[0].offer.price + '&#x20bd;/ночь';
-paragraphs[2].textContent = '' + adverts[0].offer.rooms + ' ' + declOfNum(adverts[0].offer.rooms, ['комната', 'комнаты', 'комнат']) + ' для ' + adverts[0].offer.guests + ' ' + declOfNum(adverts[0].offer.guests, ['гостя', 'гостей', 'гостей']);
-paragraphs[3].textContent = 'Заезд после ' + adverts[0].offer.checkin + ',' + ' выезд до ' + adverts[0].offer.checkout;
-paragraphs[4].textContent = adverts[0].offer.description;
-var h4String = '';
-if (adverts[0].offer.type === 'flat') {
-  h4String = h4String + 'Квартира';
-} else {
-  if (adverts[0].offer.type === 'house') {
-    h4String = h4String + 'Дом';
-  } else {
-    h4String = h4String + 'Бунгало';
-  }
-}
-advertElement.querySelector('h4').textContent = h4String;
-advertElement.querySelector('.popup__avatar').setAttribute('src', adverts[0].autor.avatar);
-var featuresElement = advertElement.querySelector('.popup__features');
-// надо очистить все элементы li которые содержались изначально в шаблоне
-while (featuresElement.firstChild) {
-  featuresElement.removeChild(featuresElement.firstChild);
-}
-adverts[0].offer.features.forEach(function (v, i, arr) {
-  var li = document.createElement('li');
-  li.className = 'feature feature--' + arr[i];
-  featuresElement.appendChild(li);
-});
+addAdvertOnMap(adverts[0]);
 var map = document.querySelector('.map');
 var beforeElement = document.querySelector('.map__filters-container');
 map.insertBefore(advertElement, beforeElement);
