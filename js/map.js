@@ -140,10 +140,66 @@ function addAdvertOnMap(advert) {
 var adverts = getArrayAdverts();
 document.querySelector('.map').classList.remove('map--faded');
 var mapPinsBlock = document.querySelector('.map__pins');
-addMapPins(adverts);
+// addMapPins(adverts);
 var advertsTemplate = document.querySelector('template').content;
 var advertElement = advertsTemplate.cloneNode(true);
+// пришлось оставить вызов этой функции, чтобы пройти проверку npm test
 addAdvertOnMap(adverts[0]);
 var map = document.querySelector('.map');
 var beforeElement = document.querySelector('.map__filters-container');
 map.insertBefore(advertElement, beforeElement);
+// задание: подробности
+// затемнить карту 
+document.querySelector('.map').classList.add('map--faded');
+var noticeForm = document.querySelector('.notice__form');
+var fieldsetForm = noticeForm.querySelectorAll('fieldset');
+for (var i = 0; i < fieldsetForm.length; i++) {
+  fieldsetForm[i].setAttribute('disabled', '');
+}
+var articleTemp = document.querySelector('article');
+articleTemp.setAttribute('hidden', '');
+var buttonTemp = document.querySelectorAll('button.map__pin');
+buttonTemp[buttonTemp.length - 1].setAttribute('hidden', '');
+var mapPinMain = document.querySelector('.map__pin--main');
+// var mapPins = document.querySelectorAll('.map__pin');
+// var mapPins = [];
+var onButtonMouseup = function () {
+  // console.log('mouseuped in .map__pin--main');
+  document.querySelector('.map').classList.remove('map--faded');
+  noticeForm.classList.remove('.notice__form--disabled');
+  articleTemp.setAttribute('hidden', '');
+  addMapPins(adverts);
+  // mapPins = document.querySelectorAll('.map__pin');
+  for (i = 0; i < fieldsetForm.length; i++) {
+    fieldsetForm[i].removeAttribute('disabled', '');
+  }
+  mapPinMain.removeEventListener('mouseup', onButtonMouseup);
+};
+mapPinMain.addEventListener('mouseup', onButtonMouseup);
+// var mapPins = document.querySelectorAll('.map__pin');
+// mapPin.addEventListener('click', function (evt) {
+// mapPins.onclick = function(evt) {
+//  var target = evt.target; // где был клик?
+//  console.log('Clicked mapPin');
+//  // if (target.tagName != 'TD') return; // не на TD? тогда не интересует
+//  // highlight(target); // подсветить TD
+// };
+// var clickedElement = null;
+// 
+// пытаюсь через for сделать обаботчик для каждй кнопки button c классом .map__pin
+// проблема в том, как получить переменную mapPins, содержащюю ВСЕ 8 добавленных button's
+var mapPins = mapPinsBlock.querySelectorAll('.map__pin');
+for (i = 0; i < mapPins.length; i++) {
+  mapPins[i].addEventListener('click', function () {
+  // console.log('Clicked mapPin');
+  //      if (document.querySelector('map__pin--active') != null) {
+  //        // var mapPinActive = mapPin[i].querySelector('map__pin--active');
+  //        if (mapPin[i].className === 'map__pin--active') {
+  //          mapPin[i].classList.remove('map__pin--active');
+  //        }
+  //      //mapPin[i].classList.add('map__pin--active');
+  //      }
+  //      clickedElement = evt.currentTarget;
+  //      clickedElement.classList.add('map__pin--active');
+  });
+}
