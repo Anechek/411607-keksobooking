@@ -141,43 +141,39 @@ function addAdvertOnMap(advert) {
   featuresElement.appendChild(fragment);
 }
 // Функция активации/деактивации полей формы
-function makeActiveAllFields(flag) {
-  var fieldsetForm = noticeForm.querySelectorAll('fieldset');
+function makeActiveAllFields(isActive) {
   for (var i = 0; i < fieldsetForm.length; i++) {
-    if (flag) {
+    if (isActive) {
       fieldsetForm[i].removeAttribute('disabled', '');
     } else {
       fieldsetForm[i].setAttribute('disabled', '');
     }
   }
 }
-// Функция, определяюща действия при клике на mapPin
+// Функция, определяющая действия при клике на mapPin
 function onMapPinClick(evt) {
   var clickedElement = evt.currentTarget;
   var mapPinActive = document.querySelector('.map__pin--active');
   if (mapPinActive === null) {
-    if (clickedElement === mapPinMain) {
-      clickedElement.classList.add('map__pin--active');
-    } else {
-      clickedElement.classList.add('map__pin--active');
+    if (clickedElement !== mapPinMain) {
       addAdvertOnMap(adverts[clickedElement.dataset.num]);
       articleTemp.removeAttribute('hidden', '');
+      document.addEventListener('keydown', onAdvertEscPress);
     }
   } else {
+    mapPinActive.classList.remove('map__pin--active');
     if (clickedElement === mapPinMain) {
       articleTemp.setAttribute('hidden', '');
-      mapPinActive.classList.remove('map__pin--active');
-      clickedElement.classList.add('map__pin--active');
     } else {
-      mapPinActive.classList.remove('map__pin--active');
       articleTemp.removeAttribute('hidden', '');
       addAdvertOnMap(adverts[clickedElement.dataset.num]);
-      clickedElement.classList.add('map__pin--active');
+      document.addEventListener('keydown', onAdvertEscPress);
     }
   }
+  clickedElement.classList.add('map__pin--active');
 }
 // Обрабочик для кнопок
-function addHendlersForAllButtons() {
+function addHandlersForAllButtons() {
   var mapPins = document.querySelectorAll('.map__pin');
   for (var i = 0; i < mapPins.length; i++) {
     mapPins[i].addEventListener('click', function (evt) {
@@ -194,13 +190,30 @@ function addHendlersForAllButtons() {
 var onButtonMouseup = function (evt) {
   var clickedElement = evt.currentTarget;
   clickedElement.classList.add('map__pin--active');
-  document.querySelector('.map').classList.remove('map--faded');
+  map.classList.remove('map--faded');
   noticeForm.classList.remove('.notice__form--disabled');
   articleTemp.setAttribute('hidden', '');
   addMapPins(adverts);
-  addHendlersForAllButtons();
+  addHandlersForAllButtons();
   makeActiveAllFields(true);
   mapPinMain.removeEventListener('mouseup', onButtonMouseup);
+};
+// Функция для обработчика события при клике popupClose
+var onPopupCloseClick = function () {
+  var mapPinActive = document.querySelector('.map__pin--active');
+  if (mapPinActive !== null) {
+    mapPinActive.classList.remove('map__pin--active');
+  }
+  articleTemp.setAttribute('hidden', '');
+  document.removeEventListener('keydown', onAdvertEscPress);
+};
+// Функция для обработчика события при нажатии Esc
+var onAdvertEscPress = function (evt) {
+  var mapPinActive = document.querySelector('.map__pin--active');
+  if (evt.keyCode === ESC_KEYCODE && mapPinActive !== null) {
+    articleTemp.setAttribute('hidden', '');
+    mapPinActive.classList.remove('map__pin--active');
+  }
 };
 var adverts = getArrayAdverts();
 document.querySelector('.map').classList.remove('map--faded');
@@ -216,6 +229,7 @@ var advertElement = document.querySelector('article');
 document.querySelector('.map').classList.add('map--faded');
 var noticeForm = document.querySelector('.notice__form');
 // Делаем неактивными все поля формы
+var fieldsetForm = noticeForm.querySelectorAll('fieldset');
 makeActiveAllFields(false);
 // Убираем с экрана объявление, которое появляется в начале
 var articleTemp = document.querySelector('article');
@@ -226,18 +240,6 @@ buttonTemp[buttonTemp.length - 1].setAttribute('hidden', '');
 // делаем обработчик для отпускания мышки на элементе .map__pin--main
 var mapPinMain = document.querySelector('.map__pin--main');
 mapPinMain.addEventListener('mouseup', onButtonMouseup);
-var popupClose = document.querySelector('.popup__close');
-popupClose.addEventListener('click', function () {
-  var mapPinActive = document.querySelector('.map__pin--active');
-  if (mapPinActive !== null) {
-    mapPinActive.classList.remove('map__pin--active');
-  }
-  articleTemp.setAttribute('hidden', '');
-});
-document.addEventListener('keydown', function (evt) {
-  var mapPinActive = document.querySelector('.map__pin--active');
-  if (evt.keyCode === ESC_KEYCODE) {
-    articleTemp.setAttribute('hidden', '');
-    mapPinActive.classList.remove('map__pin--active');
-  }
-});
+// Обаботчик события при клике popupClose
+var popupClose = articleTemp.querySelector('.popup__close');
+popupClose.addEventListener('click', onPopupCloseClick);
