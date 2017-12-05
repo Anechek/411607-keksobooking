@@ -21,6 +21,8 @@ var MAP_PIN_WIDTH_HALF = 20;
 var MAP_PIN_HEIGHT_PLUS10 = 50;
 var OPTIONS_NUMBERS_OF_ROOMS = ['комната', 'комнаты', 'комнат'];
 var OPTIONS_NUMBERS_OF_GUESTS = ['гостя', 'гостей', 'гостей'];
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 // Функция для получения целого случайного числа в заданном диапазоне
 function getRandomIntegerValue(minValue, maxValue) {
   return Math.round(Math.random() * (maxValue - minValue) + minValue);
@@ -138,6 +140,7 @@ function addAdvertOnMap(advert) {
   });
   featuresElement.appendChild(fragment);
 }
+// Функция активации/деактивации полей формы
 function makeActiveAllFields(flag) {
   var fieldsetForm = noticeForm.querySelectorAll('fieldset');
   for (var i = 0; i < fieldsetForm.length; i++) {
@@ -148,24 +151,49 @@ function makeActiveAllFields(flag) {
     }
   }
 }
+// Функция, определяюща действия при клике на mapPin
+function onMapPinClick(evt) {
+  var clickedElement = evt.currentTarget;
+  var mapPinActive = document.querySelector('.map__pin--active');
+  if (mapPinActive === null) {
+    if (clickedElement === mapPinMain) {
+      clickedElement.classList.add('map__pin--active');
+    } else {
+      clickedElement.classList.add('map__pin--active');
+      addAdvertOnMap(adverts[clickedElement.dataset.num]);
+      articleTemp.removeAttribute('hidden', '');
+    }
+  } else {
+    if (clickedElement === mapPinMain) {
+      articleTemp.setAttribute('hidden', '');
+      mapPinActive.classList.remove('map__pin--active');
+      clickedElement.classList.add('map__pin--active');
+    } else {
+      mapPinActive.classList.remove('map__pin--active');
+      articleTemp.removeAttribute('hidden', '');
+      addAdvertOnMap(adverts[clickedElement.dataset.num]);
+      clickedElement.classList.add('map__pin--active');
+    }
+  }
+}
+// Обрабочик для кнопок
 function addHendlersForAllButtons() {
   var mapPins = document.querySelectorAll('.map__pin');
-  // var mapPins = mapPinsBlock;
-  var clickedElement = null;
   for (var i = 0; i < mapPins.length; i++) {
     mapPins[i].addEventListener('click', function (evt) {
-      clickedElement = evt.currentTarget;
-      var mapPinActive = document.querySelector('.map__pin--active');
-      if (mapPinActive !== null) {
-        mapPinActive.classList.remove('map__pin--active');
-        addAdvertOnMap(adverts[clickedElement.dataset.num]);
-        articleTemp.removeAttribute('hidden', '');
+      onMapPinClick(evt);
+    });
+    mapPins[i].addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        onMapPinClick(evt);
       }
-      clickedElement.classList.add('map__pin--active');
     });
   }
 }
-var onButtonMouseup = function () {
+// Событие moseup
+var onButtonMouseup = function (evt) {
+  var clickedElement = evt.currentTarget;
+  clickedElement.classList.add('map__pin--active');
   document.querySelector('.map').classList.remove('map--faded');
   noticeForm.classList.remove('.notice__form--disabled');
   articleTemp.setAttribute('hidden', '');
@@ -177,17 +205,12 @@ var onButtonMouseup = function () {
 var adverts = getArrayAdverts();
 document.querySelector('.map').classList.remove('map--faded');
 var mapPinsBlock = document.querySelector('.map__pins');
-// Комментируем следующую строку так как вызов этой функции перенесен в функцию onButtonMouseup. 
-// addMapPins(adverts);
 var advertsTemplate = document.querySelector('template').content;
 var newElement = advertsTemplate.cloneNode(true);
-// пришлось оставить вызов этой функции, чтобы пройти проверку npm test
-// addAdvertOnMap(adverts[0]);
 var map = document.querySelector('.map');
 var beforeElement = document.querySelector('.map__filters-container');
-var advertElement = map.insertBefore(newElement, beforeElement);
-// ? advertElemet после выполнения функции insertBefore остается пустым!
-// и поэтому в дальнейшем в функции addAdvertOnMap возникает ошибка.
+map.insertBefore(newElement, beforeElement);
+var advertElement = document.querySelector('article');
 // задание: подробности
 // затемнить карту 
 document.querySelector('.map').classList.add('map--faded');
@@ -200,24 +223,21 @@ articleTemp.setAttribute('hidden', '');
 // Под объявлением оказался еще один баттон. Скрываем его тоже.
 var buttonTemp = document.querySelectorAll('button.map__pin');
 buttonTemp[buttonTemp.length - 1].setAttribute('hidden', '');
+// делаем обработчик для отпускания мышки на элементе .map__pin--main
 var mapPinMain = document.querySelector('.map__pin--main');
 mapPinMain.addEventListener('mouseup', onButtonMouseup);
-// var clickedElement = null;
-// 
-// пытаюсь через for сделать обаботчик для каждй кнопки button c классом .map__pin
-// проблема в том, как получить переменную mapPins, содержащюю ВСЕ 8 добавленных button's
-// var mapPins = mapPinsBlock.querySelectorAll('.map__pin');
-// for (i = 0; i < mapPins.length; i++) {
-//  mapPins[i].addEventListener('click', function () {
-// console.log('Clicked mapPin');
-//      if (document.querySelector('map__pin--active') != null) {
-//        // var mapPinActive = mapPin[i].querySelector('map__pin--active');
-//        if (mapPin[i].className === 'map__pin--active') {
-//          mapPin[i].classList.remove('map__pin--active');
-//        }
-//      //mapPin[i].classList.add('map__pin--active');
-//      }
-//      clickedElement = evt.currentTarget;
-//      clickedElement.classList.add('map__pin--active');
-//  });
-// }
+var popupClose = document.querySelector('.popup__close');
+popupClose.addEventListener('click', function () {
+  var mapPinActive = document.querySelector('.map__pin--active');
+  if (mapPinActive !== null) {
+    mapPinActive.classList.remove('map__pin--active');
+  }
+  articleTemp.setAttribute('hidden', '');
+});
+document.addEventListener('keydown', function (evt) {
+  var mapPinActive = document.querySelector('.map__pin--active');
+  if (evt.keyCode === ESC_KEYCODE) {
+    articleTemp.setAttribute('hidden', '');
+    mapPinActive.classList.remove('map__pin--active');
+  }
+});
