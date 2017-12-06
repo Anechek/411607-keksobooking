@@ -21,6 +21,8 @@ var MAP_PIN_WIDTH_HALF = 20;
 var MAP_PIN_HEIGHT_PLUS10 = 50;
 var OPTIONS_NUMBERS_OF_ROOMS = ['комната', 'комнаты', 'комнат'];
 var OPTIONS_NUMBERS_OF_GUESTS = ['гостя', 'гостей', 'гостей'];
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
 // Функция для получения целого случайного числа в заданном диапазоне
 function getRandomIntegerValue(minValue, maxValue) {
   return Math.round(Math.random() * (maxValue - minValue) + minValue);
@@ -97,6 +99,7 @@ function addMapPins(advertsArray) {
     button.style.top = '' + (advertsArray[i].location.y - MAP_PIN_HEIGHT_PLUS10) + 'px';
     button.className = 'map__pin';
     button.innerHTML = '<img src="' + advertsArray[i].autor.avatar + '" width="40" height="40" draggable="false">';
+    button.dataset.num = i;
     fragment.appendChild(button);
   }
   mapPinsBlock.appendChild(fragment);
@@ -137,13 +140,106 @@ function addAdvertOnMap(advert) {
   });
   featuresElement.appendChild(fragment);
 }
+// Функция активации/деактивации полей формы
+function makeActiveAllFields(isActive) {
+  for (var i = 0; i < fieldsetForm.length; i++) {
+    if (isActive) {
+      fieldsetForm[i].removeAttribute('disabled', '');
+    } else {
+      fieldsetForm[i].setAttribute('disabled', '');
+    }
+  }
+}
+// Функция, определяющая действия при клике на mapPin
+function onMapPinClick(evt) {
+  var clickedElement = evt.currentTarget;
+  var mapPinActive = document.querySelector('.map__pin--active');
+  if (mapPinActive === null) {
+    if (clickedElement !== mapPinMain) {
+      addAdvertOnMap(adverts[clickedElement.dataset.num]);
+      articleTemp.removeAttribute('hidden', '');
+      document.addEventListener('keydown', onAdvertEscPress);
+    }
+  } else {
+    mapPinActive.classList.remove('map__pin--active');
+    if (clickedElement === mapPinMain) {
+      articleTemp.setAttribute('hidden', '');
+    } else {
+      articleTemp.removeAttribute('hidden', '');
+      addAdvertOnMap(adverts[clickedElement.dataset.num]);
+      document.addEventListener('keydown', onAdvertEscPress);
+    }
+  }
+  clickedElement.classList.add('map__pin--active');
+}
+// Обрабочик для кнопок
+function addHandlersForAllButtons() {
+  var mapPins = document.querySelectorAll('.map__pin');
+  for (var i = 0; i < mapPins.length; i++) {
+    mapPins[i].addEventListener('click', function (evt) {
+      onMapPinClick(evt);
+    });
+    mapPins[i].addEventListener('keydown', function (evt) {
+      if (evt.keyCode === ENTER_KEYCODE) {
+        onMapPinClick(evt);
+      }
+    });
+  }
+}
+// Событие moseup
+var onButtonMouseup = function (evt) {
+  var clickedElement = evt.currentTarget;
+  clickedElement.classList.add('map__pin--active');
+  map.classList.remove('map--faded');
+  noticeForm.classList.remove('.notice__form--disabled');
+  articleTemp.setAttribute('hidden', '');
+  addMapPins(adverts);
+  addHandlersForAllButtons();
+  makeActiveAllFields(true);
+  mapPinMain.removeEventListener('mouseup', onButtonMouseup);
+};
+// Функция для обработчика события при клике popupClose
+var onPopupCloseClick = function () {
+  var mapPinActive = document.querySelector('.map__pin--active');
+  if (mapPinActive !== null) {
+    mapPinActive.classList.remove('map__pin--active');
+  }
+  articleTemp.setAttribute('hidden', '');
+  document.removeEventListener('keydown', onAdvertEscPress);
+};
+// Функция для обработчика события при нажатии Esc
+var onAdvertEscPress = function (evt) {
+  var mapPinActive = document.querySelector('.map__pin--active');
+  if (evt.keyCode === ESC_KEYCODE && mapPinActive !== null) {
+    articleTemp.setAttribute('hidden', '');
+    mapPinActive.classList.remove('map__pin--active');
+  }
+};
 var adverts = getArrayAdverts();
 document.querySelector('.map').classList.remove('map--faded');
 var mapPinsBlock = document.querySelector('.map__pins');
-addMapPins(adverts);
 var advertsTemplate = document.querySelector('template').content;
-var advertElement = advertsTemplate.cloneNode(true);
-addAdvertOnMap(adverts[0]);
+var newElement = advertsTemplate.cloneNode(true);
 var map = document.querySelector('.map');
 var beforeElement = document.querySelector('.map__filters-container');
-map.insertBefore(advertElement, beforeElement);
+map.insertBefore(newElement, beforeElement);
+var advertElement = document.querySelector('article');
+// задание: подробности
+// затемнить карту 
+document.querySelector('.map').classList.add('map--faded');
+var noticeForm = document.querySelector('.notice__form');
+// Делаем неактивными все поля формы
+var fieldsetForm = noticeForm.querySelectorAll('fieldset');
+makeActiveAllFields(false);
+// Убираем с экрана объявление, которое появляется в начале
+var articleTemp = document.querySelector('article');
+articleTemp.setAttribute('hidden', '');
+// Под объявлением оказался еще один баттон. Скрываем его тоже.
+var buttonTemp = document.querySelectorAll('button.map__pin');
+buttonTemp[buttonTemp.length - 1].setAttribute('hidden', '');
+// делаем обработчик для отпускания мышки на элементе .map__pin--main
+var mapPinMain = document.querySelector('.map__pin--main');
+mapPinMain.addEventListener('mouseup', onButtonMouseup);
+// Обаботчик события при клике popupClose
+var popupClose = articleTemp.querySelector('.popup__close');
+popupClose.addEventListener('click', onPopupCloseClick);
