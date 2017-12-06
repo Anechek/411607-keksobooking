@@ -215,6 +215,54 @@ var onAdvertEscPress = function (evt) {
     mapPinActive.classList.remove('map__pin--active');
   }
 };
+// Функция для обработчика ввода времени заезда
+var onTimeInInput = function (evt) {
+  var target = evt.target;
+  timeOutInput.value = target.value;
+};
+// Функция для обработчика ввода типа жилья
+var onTypeOfHouseInput = function (evt) {
+  var obj = {
+    'bungalo': '0',
+    'flat': '1000',
+    'house': '5000',
+    'palace': '10000'
+  };
+  var target = evt.target;
+  priceInput.min = obj[target.value];
+};
+// этой функцией дисаблим все option для capacity
+function disableAllCapacity() {
+  for (var i = 0; i < capacityArray.length; i++) {
+    capacityArray[i].setAttribute('hidden', '');
+  }
+}
+// эта функция открывает первые num options в capacity
+function unDisableCapacities(num) {
+  for (var i = 1; i <= num; i++) {
+    for (var j = 0; j < capacityArray.length; j++) {
+      if (capacityArray[j].value === '' + i) {
+        capacityArray[j].removeAttribute('hidden', '');
+      }
+    }
+  }
+}
+// Функция для обработчика ввода количества комнат
+var onRoomsInput = function (evt) {
+  var roomValue = evt.target.value;
+  disableAllCapacity();
+  if (roomValue === '100') {
+    for (var i = 0; i < capacityArray.length; i++) {
+      if (capacityArray[i].value === '0') {
+        capacityArray[i].removeAttribute('hidden', '');
+      }
+    }
+  } else {
+    for (i = 1; i <= Number(roomValue); i++) {
+      unDisableCapacities(i);
+    }
+  }
+};
 var adverts = getArrayAdverts();
 document.querySelector('.map').classList.remove('map--faded');
 var mapPinsBlock = document.querySelector('.map__pins');
@@ -243,3 +291,17 @@ mapPinMain.addEventListener('mouseup', onButtonMouseup);
 // Обаботчик события при клике popupClose
 var popupClose = articleTemp.querySelector('.popup__close');
 popupClose.addEventListener('click', onPopupCloseClick);
+// задание №14 доверяй, но проверяй
+// Обработчик ввода времени заезда
+var timeInInput = noticeForm.querySelector('#timein');
+var timeOutInput = noticeForm.querySelector('#timeout');
+timeInInput.addEventListener('input', onTimeInInput);
+// Обработчик ввода типа жилья
+var typeInput = noticeForm.querySelector('#type');
+var priceInput = noticeForm.querySelector('#price');
+typeInput.addEventListener('input', onTypeOfHouseInput);
+// Обработчик ввода количества комнат
+var roomsInput = noticeForm.querySelector('#room_number');
+var capacityInput = noticeForm.querySelector('#capacity');
+var capacityArray = capacityInput.querySelectorAll('option');
+roomsInput.addEventListener('input', onRoomsInput);
