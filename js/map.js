@@ -21,8 +21,19 @@ var MAP_PIN_WIDTH_HALF = 20;
 var MAP_PIN_HEIGHT_PLUS10 = 50;
 var OPTIONS_NUMBERS_OF_ROOMS = ['комната', 'комнаты', 'комнат'];
 var OPTIONS_NUMBERS_OF_GUESTS = ['гостя', 'гостей', 'гостей'];
+var TITLE_TYPES_OF_HOUSES = {
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
+var MIN_PRICE_TYPE_OF_HOUSES = {
+  'bungalo': '0',
+  'flat': '1000',
+  'house': '5000',
+  'palace': '10000'
+};
 // Функция для получения целого случайного числа в заданном диапазоне
 function getRandomIntegerValue(minValue, maxValue) {
   return Math.round(Math.random() * (maxValue - minValue) + minValue);
@@ -111,12 +122,7 @@ function declOfNum(number, titles) {
 }
 // Функция для определения заголовка
 function getTitleDependOnType(type) {
-  var obj = {
-    flat: 'Квартира',
-    house: 'Дом',
-    bungalo: 'Бунгало'
-  };
-  return obj[type];
+  return TITLE_TYPES_OF_HOUSES[type];
 }
 // Функция заполнения объявления, созданного из шаблона, данными из параметра advert
 function addAdvertOnMap(advert) {
@@ -191,6 +197,8 @@ var onButtonMouseup = function (evt) {
   var clickedElement = evt.currentTarget;
   clickedElement.classList.add('map__pin--active');
   map.classList.remove('map--faded');
+  // "при нажатии на главный пин, в самом начале, тебе нужно не только убирать disabled со всех филдсетов, но и убирать класс
+  // notice__form--disabled с формы" данное замечание уже было реализовано ранее здесь
   noticeForm.classList.remove('.notice__form--disabled');
   articleTemp.setAttribute('hidden', '');
   addMapPins(adverts);
@@ -220,17 +228,47 @@ var onTimeInInput = function (evt) {
   var target = evt.target;
   timeOutInput.value = target.value;
 };
+// Функция для обработчика ввода времени выезда
+var onTimeOutInput = function (evt) {
+  var targetOut = evt.target;
+  timeInInput.value = targetOut.value;
+};
+function setMinPrice(minPrice) {
+  priceInput.min = minPrice;
+}
 // Функция для обработчика ввода типа жилья
 var onTypeOfHouseInput = function (evt) {
-  var obj = {
-    'bungalo': '0',
-    'flat': '1000',
-    'house': '5000',
-    'palace': '10000'
-  };
   var target = evt.target;
-  priceInput.min = obj[target.value];
+  priceInput.min = MIN_PRICE_TYPE_OF_HOUSES[target.value];
 };
+// Функция поиска атрибута selected
+function getSelectedCapacity() {
+  for (var i = 0; i < capacityArray.length; i++) {
+    if (capacityArray[i].hasAttribute('selected')) {
+      return i;
+    }
+  }
+  return false;
+}
+// Функция установки атрибута selected
+function setSelectedCapacity(guests) {
+  for (var i = 0; i < capacityArray.length; i++) {
+    if (Number(capacityArray[i].value) === guests) {
+      capacityArray[i].setAttribute('selected', '');
+    }
+  }
+}
+// Функция установки валидного количества гостей в зависимости количества комнат
+function setValidGuests(rooms) {
+  if (capacityArray[getSelectedCapacity()].value !== rooms) {
+    capacityArray[getSelectedCapacity()].removeAttribute('selected', '');
+    if (rooms === 100) {
+      setSelectedCapacity(0);
+    } else {
+      setSelectedCapacity(1);
+    }
+  }
+}
 // этой функцией дисаблим все option для capacity
 function disableAllCapacity() {
   for (var i = 0; i < capacityArray.length; i++) {
@@ -241,7 +279,7 @@ function disableAllCapacity() {
 function unDisableCapacities(num) {
   for (var i = 1; i <= num; i++) {
     for (var j = 0; j < capacityArray.length; j++) {
-      if (capacityArray[j].value === '' + i) {
+      if (Number(capacityArray[j].value) === i) {
         capacityArray[j].removeAttribute('hidden', '');
       }
     }
@@ -249,16 +287,19 @@ function unDisableCapacities(num) {
 }
 // Функция для обработчика ввода количества комнат
 var onRoomsInput = function (evt) {
-  var roomValue = evt.target.value;
+  var roomValue = +evt.target.value;
   disableAllCapacity();
-  if (roomValue === '100') {
+  if (roomValue === 100) {
+    setValidGuests(100);
     for (var i = 0; i < capacityArray.length; i++) {
-      if (capacityArray[i].value === '0') {
+      if (Number(capacityArray[i].value) === 0) {
         capacityArray[i].removeAttribute('hidden', '');
       }
     }
   } else {
-    for (i = 1; i <= Number(roomValue); i++) {
+    setValidGuests(1);
+    // npm test  не попускает два var для i  в одной функции
+    for (i = 1; i <= roomValue; i++) {
       unDisableCapacities(i);
     }
   }
@@ -296,6 +337,7 @@ popupClose.addEventListener('click', onPopupCloseClick);
 var timeInInput = noticeForm.querySelector('#timein');
 var timeOutInput = noticeForm.querySelector('#timeout');
 timeInInput.addEventListener('input', onTimeInInput);
+timeOutInput.addEventListener('input', onTimeOutInput);
 // Обработчик ввода типа жилья
 var typeInput = noticeForm.querySelector('#type');
 var priceInput = noticeForm.querySelector('#price');
@@ -305,3 +347,5 @@ var roomsInput = noticeForm.querySelector('#room_number');
 var capacityInput = noticeForm.querySelector('#capacity');
 var capacityArray = capacityInput.querySelectorAll('option');
 roomsInput.addEventListener('input', onRoomsInput);
+setMinPrice(MIN_PRICE_TYPE_OF_HOUSES['flat']);
+setValidGuests(1);
