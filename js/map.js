@@ -21,8 +21,20 @@ var MAP_PIN_WIDTH_HALF = 20;
 var MAP_PIN_HEIGHT_PLUS10 = 50;
 var OPTIONS_NUMBERS_OF_ROOMS = ['комната', 'комнаты', 'комнат'];
 var OPTIONS_NUMBERS_OF_GUESTS = ['гостя', 'гостей', 'гостей'];
+var TITLE_TYPES_OF_HOUSES = {
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
+var MIN_PRICE_TYPE_OF_HOUSES = {
+  'bungalo': '0',
+  'flat': '1000',
+  'house': '5000',
+  'palace': '10000'
+};
+var MAX_COUNT_GUESTS = 100;
 // Функция для получения целого случайного числа в заданном диапазоне
 function getRandomIntegerValue(minValue, maxValue) {
   return Math.round(Math.random() * (maxValue - minValue) + minValue);
@@ -111,12 +123,7 @@ function declOfNum(number, titles) {
 }
 // Функция для определения заголовка
 function getTitleDependOnType(type) {
-  var obj = {
-    flat: 'Квартира',
-    house: 'Дом',
-    bungalo: 'Бунгало'
-  };
-  return obj[type];
+  return TITLE_TYPES_OF_HOUSES[type];
 }
 // Функция заполнения объявления, созданного из шаблона, данными из параметра advert
 function addAdvertOnMap(advert) {
@@ -190,8 +197,7 @@ function addHandlersForAllButtons() {
 var onButtonMouseup = function (evt) {
   var clickedElement = evt.currentTarget;
   clickedElement.classList.add('map__pin--active');
-  map.classList.remove('map--faded');
-  noticeForm.classList.remove('.notice__form--disabled');
+  noticeForm.classList.remove('notice__form--disabled');
   articleTemp.setAttribute('hidden', '');
   addMapPins(adverts);
   addHandlersForAllButtons();
@@ -213,6 +219,87 @@ var onAdvertEscPress = function (evt) {
   if (evt.keyCode === ESC_KEYCODE && mapPinActive !== null) {
     articleTemp.setAttribute('hidden', '');
     mapPinActive.classList.remove('map__pin--active');
+  }
+};
+// Функция для обработчика ввода времени заезда
+var onTimeInChange = function (evt) {
+  var target = evt.target;
+  timeOutChange.value = target.value;
+};
+// Функция для обработчика ввода времени выезда
+var onTimeOutChange = function (evt) {
+  var targetOut = evt.target;
+  timeInChange.value = targetOut.value;
+};
+function setMinPrice(minPrice) {
+  priceChange.min = minPrice;
+}
+// Функция для обработчика ввода типа жилья
+var onTypeOfHouseChange = function (evt) {
+  var target = evt.target;
+  priceChange.min = MIN_PRICE_TYPE_OF_HOUSES[target.value];
+};
+// Функция поиска атрибута selected
+function getSelectedCapacity() {
+  for (var i = 0; i < capacityArray.length; i++) {
+    if (capacityArray[i].hasAttribute('selected')) {
+      return i;
+    }
+  }
+  return false;
+}
+// Функция установки атрибута selected
+function setSelectedCapacity(guests) {
+  for (var i = 0; i < capacityArray.length; i++) {
+    if (Number(capacityArray[i].value) === guests) {
+      capacityArray[i].setAttribute('selected', '');
+    }
+  }
+}
+// Функция установки валидного количества гостей в зависимости количества комнат
+function setValidGuests(rooms) {
+  if (capacityArray[getSelectedCapacity()].value !== rooms) {
+    capacityArray[getSelectedCapacity()].removeAttribute('selected', '');
+    if (rooms === MAX_COUNT_GUESTS) {
+      setSelectedCapacity(0);
+    } else {
+      setSelectedCapacity(1);
+    }
+  }
+}
+// этой функцией дисаблим все option для capacity
+function disableAllCapacity() {
+  for (var i = 0; i < capacityArray.length; i++) {
+    capacityArray[i].setAttribute('hidden', '');
+  }
+}
+// эта функция открывает первые num options в capacity
+function unDisableCapacities(num) {
+  for (var i = 1; i <= num; i++) {
+    for (var j = 0; j < capacityArray.length; j++) {
+      if (Number(capacityArray[j].value) === i) {
+        capacityArray[j].removeAttribute('hidden', '');
+      }
+    }
+  }
+}
+// Функция для обработчика ввода количества комнат
+var onRoomsChange = function (evt) {
+  var roomValue = +evt.target.value;
+  disableAllCapacity();
+  if (roomValue === MAX_COUNT_GUESTS) {
+    setValidGuests(MAX_COUNT_GUESTS);
+    for (var i = 0; i < capacityArray.length; i++) {
+      if (Number(capacityArray[i].value) === 0) {
+        capacityArray[i].removeAttribute('hidden', '');
+      }
+    }
+  } else {
+    setValidGuests(1);
+    // npm test  не попускает два var для i  в одной функции
+    for (var j = 1; j <= roomValue; j++) {
+      unDisableCapacities(j);
+    }
   }
 };
 var adverts = getArrayAdverts();
@@ -243,3 +330,20 @@ mapPinMain.addEventListener('mouseup', onButtonMouseup);
 // Обаботчик события при клике popupClose
 var popupClose = articleTemp.querySelector('.popup__close');
 popupClose.addEventListener('click', onPopupCloseClick);
+// задание №14 доверяй, но проверяй
+// Обработчик ввода времени заезда
+var timeInChange = noticeForm.querySelector('#timein');
+var timeOutChange = noticeForm.querySelector('#timeout');
+timeInChange.addEventListener('change', onTimeInChange);
+timeOutChange.addEventListener('change', onTimeOutChange);
+// Обработчик ввода типа жилья
+var typeChange = noticeForm.querySelector('#type');
+var priceChange = noticeForm.querySelector('#price');
+typeChange.addEventListener('change', onTypeOfHouseChange);
+// Обработчик ввода количества комнат
+var roomsChange = noticeForm.querySelector('#room_number');
+var capacityChange = noticeForm.querySelector('#capacity');
+var capacityArray = capacityChange.querySelectorAll('option');
+roomsChange.addEventListener('change', onRoomsChange);
+setMinPrice(MIN_PRICE_TYPE_OF_HOUSES['flat']);
+setValidGuests(1);
