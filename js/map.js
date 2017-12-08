@@ -34,6 +34,7 @@ var MIN_PRICE_TYPE_OF_HOUSES = {
   'house': '5000',
   'palace': '10000'
 };
+var MAX_COUNT_GUESTS = 100;
 // Функция для получения целого случайного числа в заданном диапазоне
 function getRandomIntegerValue(minValue, maxValue) {
   return Math.round(Math.random() * (maxValue - minValue) + minValue);
@@ -196,10 +197,7 @@ function addHandlersForAllButtons() {
 var onButtonMouseup = function (evt) {
   var clickedElement = evt.currentTarget;
   clickedElement.classList.add('map__pin--active');
-  map.classList.remove('map--faded');
-  // "при нажатии на главный пин, в самом начале, тебе нужно не только убирать disabled со всех филдсетов, но и убирать класс
-  // notice__form--disabled с формы" данное замечание уже было реализовано ранее здесь
-  noticeForm.classList.remove('.notice__form--disabled');
+  noticeForm.classList.remove('notice__form--disabled');
   articleTemp.setAttribute('hidden', '');
   addMapPins(adverts);
   addHandlersForAllButtons();
@@ -224,22 +222,22 @@ var onAdvertEscPress = function (evt) {
   }
 };
 // Функция для обработчика ввода времени заезда
-var onTimeInInput = function (evt) {
+var onTimeInChange = function (evt) {
   var target = evt.target;
-  timeOutInput.value = target.value;
+  timeOutChange.value = target.value;
 };
 // Функция для обработчика ввода времени выезда
-var onTimeOutInput = function (evt) {
+var onTimeOutChange = function (evt) {
   var targetOut = evt.target;
-  timeInInput.value = targetOut.value;
+  timeInChange.value = targetOut.value;
 };
 function setMinPrice(minPrice) {
-  priceInput.min = minPrice;
+  priceChange.min = minPrice;
 }
 // Функция для обработчика ввода типа жилья
-var onTypeOfHouseInput = function (evt) {
+var onTypeOfHouseChange = function (evt) {
   var target = evt.target;
-  priceInput.min = MIN_PRICE_TYPE_OF_HOUSES[target.value];
+  priceChange.min = MIN_PRICE_TYPE_OF_HOUSES[target.value];
 };
 // Функция поиска атрибута selected
 function getSelectedCapacity() {
@@ -262,7 +260,7 @@ function setSelectedCapacity(guests) {
 function setValidGuests(rooms) {
   if (capacityArray[getSelectedCapacity()].value !== rooms) {
     capacityArray[getSelectedCapacity()].removeAttribute('selected', '');
-    if (rooms === 100) {
+    if (rooms === MAX_COUNT_GUESTS) {
       setSelectedCapacity(0);
     } else {
       setSelectedCapacity(1);
@@ -286,11 +284,11 @@ function unDisableCapacities(num) {
   }
 }
 // Функция для обработчика ввода количества комнат
-var onRoomsInput = function (evt) {
+var onRoomsChange = function (evt) {
   var roomValue = +evt.target.value;
   disableAllCapacity();
-  if (roomValue === 100) {
-    setValidGuests(100);
+  if (roomValue === MAX_COUNT_GUESTS) {
+    setValidGuests(MAX_COUNT_GUESTS);
     for (var i = 0; i < capacityArray.length; i++) {
       if (Number(capacityArray[i].value) === 0) {
         capacityArray[i].removeAttribute('hidden', '');
@@ -299,8 +297,8 @@ var onRoomsInput = function (evt) {
   } else {
     setValidGuests(1);
     // npm test  не попускает два var для i  в одной функции
-    for (i = 1; i <= roomValue; i++) {
-      unDisableCapacities(i);
+    for (var j = 1; j <= roomValue; j++) {
+      unDisableCapacities(j);
     }
   }
 };
@@ -334,18 +332,18 @@ var popupClose = articleTemp.querySelector('.popup__close');
 popupClose.addEventListener('click', onPopupCloseClick);
 // задание №14 доверяй, но проверяй
 // Обработчик ввода времени заезда
-var timeInInput = noticeForm.querySelector('#timein');
-var timeOutInput = noticeForm.querySelector('#timeout');
-timeInInput.addEventListener('input', onTimeInInput);
-timeOutInput.addEventListener('input', onTimeOutInput);
+var timeInChange = noticeForm.querySelector('#timein');
+var timeOutChange = noticeForm.querySelector('#timeout');
+timeInChange.addEventListener('change', onTimeInChange);
+timeOutChange.addEventListener('change', onTimeOutChange);
 // Обработчик ввода типа жилья
-var typeInput = noticeForm.querySelector('#type');
-var priceInput = noticeForm.querySelector('#price');
-typeInput.addEventListener('input', onTypeOfHouseInput);
+var typeChange = noticeForm.querySelector('#type');
+var priceChange = noticeForm.querySelector('#price');
+typeChange.addEventListener('change', onTypeOfHouseChange);
 // Обработчик ввода количества комнат
-var roomsInput = noticeForm.querySelector('#room_number');
-var capacityInput = noticeForm.querySelector('#capacity');
-var capacityArray = capacityInput.querySelectorAll('option');
-roomsInput.addEventListener('input', onRoomsInput);
+var roomsChange = noticeForm.querySelector('#room_number');
+var capacityChange = noticeForm.querySelector('#capacity');
+var capacityArray = capacityChange.querySelectorAll('option');
+roomsChange.addEventListener('change', onRoomsChange);
 setMinPrice(MIN_PRICE_TYPE_OF_HOUSES['flat']);
 setValidGuests(1);
