@@ -18,11 +18,15 @@
   var MAX_COUNT_ROOMS = 5;
   var MIN_PRICE = 1000;
   var MAX_PRICE = 1000000;
+
   // Функция для получения целого случайного числа в заданном диапазоне
+
   function getRandomIntegerValue(minValue, maxValue) {
     return Math.round(Math.random() * (maxValue - minValue) + minValue);
   }
+
   // Функция для получения массива преимуществ
+
   function getArrayFeatures(count) {
     var arrayFeatures = [];
     var features = TYPES_OF_FEATURES.slice();
@@ -34,7 +38,9 @@
     }
     return arrayFeatures;
   }
+
   // Функция заполнения массива объявлений согласно заданию
+
   function getArrayAdverts() {
     var array = [];
     var numbers = AUTORS_NUMBERS.slice();
@@ -85,5 +91,7 @@
     }
     return array;
   }
+
   window.adverts = getArrayAdverts();
+
 })();

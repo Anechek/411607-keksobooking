@@ -25,12 +25,42 @@ window.card = (function () {
   // Функция для обработчика события при клике popupClose
 
   var onPopupCloseClick = function () {
-    var mapPinActive = document.querySelector('.map__pin--active');
-    if (mapPinActive !== null) {
-      mapPinActive.classList.remove('map__pin--active');
-    }
+    window.pin.removeActivePin();
     articleTemp.setAttribute('hidden', '');
-    document.removeEventListener('keydown', window.card.onAdvertEscPress);
+    document.removeEventListener('keydown', onAdvertEscPress);
+  };
+
+  // Функция для обработчика события при нажатии Esc
+
+  var onAdvertEscPress = function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      articleTemp.setAttribute('hidden', '');
+      window.pin.removeActivePin();
+    }
+  };
+
+  // Функция заполнения объявления, созданного из шаблона, данными из параметра advert
+
+  var addAdvertOnMap = function (advert) {
+    articleTemp.querySelector('h3').textContent = advert.offer.title;
+    var paragraphs = articleTemp.querySelectorAll('p');
+    paragraphs[0].textContent = advert.offer.address;
+    paragraphs[1].innerHTML = '' + advert.offer.price + '&#x20bd;/ночь';
+    paragraphs[2].textContent = '' + advert.offer.rooms + ' ' + declOfNum(advert.offer.rooms, OPTIONS_NUMBERS_OF_ROOMS) + ' для ' + advert.offer.guests + ' ' + declOfNum(advert.offer.guests, OPTIONS_NUMBERS_OF_GUESTS);
+    paragraphs[3].textContent = 'Заезд после ' + advert.offer.checkin + ',' + ' выезд до ' + advert.offer.checkout;
+    paragraphs[4].textContent = advert.offer.description;
+    articleTemp.querySelector('h4').textContent = getTitleDependOnType(advert.offer.type);
+    articleTemp.querySelector('.popup__avatar').setAttribute('src', advert.autor.avatar);
+    var featuresElement = articleTemp.querySelector('.popup__features');
+    // надо очистить все элементы li которые содержались изначально в шаблоне
+    featuresElement.innerHTML = '';
+    var fragment = document.createDocumentFragment();
+    advert.offer.features.forEach(function (v, i, arr) {
+      var li = document.createElement('li');
+      li.className = 'feature feature--' + arr[i];
+      fragment.appendChild(li);
+    });
+    featuresElement.appendChild(fragment);
   };
 
   var advertsTemplate = document.querySelector('template').content;
@@ -38,55 +68,29 @@ window.card = (function () {
   var map = document.querySelector('.map');
   var beforeElement = document.querySelector('.map__filters-container');
   map.insertBefore(newElement, beforeElement);
-  var advertElement = document.querySelector('article');
+
   // Убираем с экрана объявление, которое появляется в начале
+
   var articleTemp = document.querySelector('article');
-  // window.articleTemp = document.querySelector('article');
-  // var articleTemp = document.querySelector('article');
   articleTemp.setAttribute('hidden', '');
+
   // Под объявлением оказался еще один баттон. Скрываем его тоже.
+
   var buttonTemp = document.querySelectorAll('button.map__pin');
   buttonTemp[buttonTemp.length - 1].setAttribute('hidden', '');
+
   // Обаботчик события при клике popupClose
+
   var popupClose = articleTemp.querySelector('.popup__close');
   popupClose.addEventListener('click', onPopupCloseClick);
 
   return {
+    addAdvertOnMap: addAdvertOnMap,
 
-  // Функция заполнения объявления, созданного из шаблона, данными из параметра advert
-
-    addAdvertOnMap: function (advert) {
-      advertElement.querySelector('h3').textContent = advert.offer.title;
-      var paragraphs = advertElement.querySelectorAll('p');
-      paragraphs[0].textContent = advert.offer.address;
-      paragraphs[1].innerHTML = '' + advert.offer.price + '&#x20bd;/ночь';
-      paragraphs[2].textContent = '' + advert.offer.rooms + ' ' + declOfNum(advert.offer.rooms, OPTIONS_NUMBERS_OF_ROOMS) + ' для ' + advert.offer.guests + ' ' + declOfNum(advert.offer.guests, OPTIONS_NUMBERS_OF_GUESTS);
-      paragraphs[3].textContent = 'Заезд после ' + advert.offer.checkin + ',' + ' выезд до ' + advert.offer.checkout;
-      paragraphs[4].textContent = advert.offer.description;
-      advertElement.querySelector('h4').textContent = getTitleDependOnType(advert.offer.type);
-      advertElement.querySelector('.popup__avatar').setAttribute('src', advert.autor.avatar);
-      var featuresElement = advertElement.querySelector('.popup__features');
-      // надо очистить все элементы li которые содержались изначально в шаблоне
-      featuresElement.innerHTML = '';
-      var fragment = document.createDocumentFragment();
-      advert.offer.features.forEach(function (v, i, arr) {
-        var li = document.createElement('li');
-        li.className = 'feature feature--' + arr[i];
-        fragment.appendChild(li);
-      });
-      featuresElement.appendChild(fragment);
+    addAdvertEscEvent: function () {
+      document.addEventListener('keydown', onAdvertEscPress);
     },
 
-    // Функция для обработчика события при нажатии Esc
-
-    onAdvertEscPress: function (evt) {
-    // var onAdvertEscPress = function (evt) {
-      var mapPinActive = document.querySelector('.map__pin--active');
-      if (evt.keyCode === ESC_KEYCODE && mapPinActive !== null) {
-        articleTemp.setAttribute('hidden', '');
-        mapPinActive.classList.remove('map__pin--active');
-      }
-    },
     articleTemp: articleTemp
   };
 })();
