@@ -8,22 +8,22 @@ window.card = (function () {
   };
   var OPTIONS_NUMBERS_OF_ROOMS = ['комната', 'комнаты', 'комнат'];
   var OPTIONS_NUMBERS_OF_GUESTS = ['гостя', 'гостей', 'гостей'];
-  
+
   // Функция для склонения числительных
-  
+
   function declOfNum(number, titles) {
     var cases = [2, 0, 1, 1, 1, 2];
     return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   }
-  
+
   // Функция для определения заголовка
-  
+
   function getTitleDependOnType(type) {
     return TITLE_TYPES_OF_HOUSES[type];
   }
-  
+
   // Функция для обработчика события при клике popupClose
-  
+
   var onPopupCloseClick = function () {
     var mapPinActive = document.querySelector('.map__pin--active');
     if (mapPinActive !== null) {
@@ -32,7 +32,7 @@ window.card = (function () {
     articleTemp.setAttribute('hidden', '');
     document.removeEventListener('keydown', window.card.onAdvertEscPress);
   };
-  
+
   var advertsTemplate = document.querySelector('template').content;
   var newElement = advertsTemplate.cloneNode(true);
   var map = document.querySelector('.map');
@@ -50,11 +50,11 @@ window.card = (function () {
   // Обаботчик события при клике popupClose
   var popupClose = articleTemp.querySelector('.popup__close');
   popupClose.addEventListener('click', onPopupCloseClick);
-  
+
   return {
-    
+
   // Функция заполнения объявления, созданного из шаблона, данными из параметра advert
-    
+
     addAdvertOnMap: function (advert) {
       advertElement.querySelector('h3').textContent = advert.offer.title;
       var paragraphs = advertElement.querySelectorAll('p');
@@ -76,9 +76,9 @@ window.card = (function () {
       });
       featuresElement.appendChild(fragment);
     },
-    
+
     // Функция для обработчика события при нажатии Esc
-    
+
     onAdvertEscPress: function (evt) {
     // var onAdvertEscPress = function (evt) {
       var mapPinActive = document.querySelector('.map__pin--active');
