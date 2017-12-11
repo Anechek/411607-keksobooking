@@ -49,6 +49,9 @@ window.pin = (function () {
   window.form.makeActiveAllFields(false);
 
   return {
+    MAP_PIN_WIDTH_HALF: MAP_PIN_WIDTH_HALF,
+    MAP_PIN_HEIGHT_PLUS10: MAP_PIN_HEIGHT_PLUS10,
+
     addHandlersForAllButtons: addHandlersForAllButtons,
 
     removeActivePin: function () {
