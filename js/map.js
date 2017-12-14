@@ -1,5 +1,7 @@
 'use strict';
 window.map = (function () {
+  var MIN_COORD_Y = 100;
+  var MAX_COORD_Y = 500;
 
   var onMainPinMouseDown = function (evt) {
     evt.preventDefault();
@@ -24,13 +26,10 @@ window.map = (function () {
       var coordX = mapPinMain.offsetLeft - shift.x;
       var coordY = mapPinMain.offsetTop - shift.y;
 
-      if (coordY > 100 && coordY < 500) {
+      if (coordY > MIN_COORD_Y && coordY < MAX_COORD_Y) {
         mapPinMain.style.top = coordY + 'px';
       }
       mapPinMain.style.left = coordX + 'px';
-
-      // Вопрос Наставнику: надо ли сделать глобальными две константы INITIAL_ADDRESS_X и INITIAL_ADDRESS_Y из модуля 
-      // data.js и использовать их здесь? Или вообще от них отказаться и сделать как здесь 'x: ' и 'y: ' ??
 
       addressInput.value = 'x: ' + (coordX + window.pin.MAP_PIN_WIDTH_HALF) + ', y: ' + (coordY + window.pin.MAP_PIN_HEIGHT_PLUS10);
     };
@@ -53,8 +52,8 @@ window.map = (function () {
     var clickedElement = evt.currentTarget;
     clickedElement.classList.add('map__pin--active');
     window.form.noticeForm.classList.remove('notice__form--disabled');
-    window.card.articleTemp.setAttribute('hidden', '');
-    window.pin.addMapPins(window.adverts);
+    window.showCard(null, window.card.articleTemp, false);
+    window.pin.addMapPins(window.data.adverts);
     window.pin.addHandlersForAllButtons();
     window.form.makeActiveAllFields(true);
     mapPinMain.removeEventListener('mouseup', onButtonMouseup);
