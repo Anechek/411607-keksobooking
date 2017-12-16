@@ -1,36 +1,24 @@
 'use strict';
 window.form = (function () {
-  var MIN_PRICE_TYPE_OF_HOUSES = {
-    'bungalo': '0',
-    'flat': '1000',
-    'house': '5000',
-    'palace': '10000'
-  };
+  var ALL_TYPES_OF_HOUSES = ['bungalo', 'flat', 'house', 'palace'];
+  var MIN_PRICES_FOR_HOUSES = ['0', '1000', '5000', '10000'];
   var MAX_COUNT_GUESTS = 100;
 
-  // Функция для обработчика ввода времени заезда
+  // Функция для обработчика ввода времени заезда и выезда
 
-  var onTimeInChange = function (evt) {
-    var target = evt.target;
-    timeOutChange.value = target.value;
+  var syncValues = function (element, value) {
+    element.value = value;
   };
-
-  // Функция для обработчика ввода времени выезда
-
-  var onTimeOutChange = function (evt) {
-    var targetOut = evt.target;
-    timeInChange.value = targetOut.value;
-  };
-  function setMinPrice(minPrice) {
-    priceChange.min = minPrice;
-  }
 
   // Функция для обработчика ввода типа жилья
 
-  var onTypeOfHouseChange = function (evt) {
-    var target = evt.target;
-    priceChange.min = MIN_PRICE_TYPE_OF_HOUSES[target.value];
+  var syncValueWithMin = function (element, value) {
+    element.min = value;
   };
+
+  function setMinPrice(minPrice) {
+    priceChange.min = minPrice;
+  }
 
   // Функция поиска атрибута selected
 
@@ -112,14 +100,23 @@ window.form = (function () {
 
   var timeInChange = noticeForm.querySelector('#timein');
   var timeOutChange = noticeForm.querySelector('#timeout');
-  timeInChange.addEventListener('change', onTimeInChange);
-  timeOutChange.addEventListener('change', onTimeOutChange);
+
+  timeInChange.addEventListener('change', function (evt) {
+    window.synchronizeFields(evt.target, timeOutChange, window.data.TIMES_CHECK_IN_OUT, window.data.TIMES_CHECK_IN_OUT, syncValues);
+  });
+
+  timeOutChange.addEventListener('change', function (evt) {
+    window.synchronizeFields(evt.target, timeInChange, window.data.TIMES_CHECK_IN_OUT, window.data.TIMES_CHECK_IN_OUT, syncValues);
+  });
 
   // Обработчик ввода типа жилья
 
   var typeChange = noticeForm.querySelector('#type');
   var priceChange = noticeForm.querySelector('#price');
-  typeChange.addEventListener('change', onTypeOfHouseChange);
+
+  typeChange.addEventListener('change', function (evt) {
+    window.synchronizeFields(evt.target, priceChange, ALL_TYPES_OF_HOUSES, MIN_PRICES_FOR_HOUSES, syncValueWithMin);
+  });
 
   // Обработчик ввода количества комнат
 
@@ -127,8 +124,9 @@ window.form = (function () {
   var capacityChange = noticeForm.querySelector('#capacity');
   var capacityArray = capacityChange.querySelectorAll('option');
   roomsChange.addEventListener('change', onRoomsChange);
-  setMinPrice(MIN_PRICE_TYPE_OF_HOUSES['flat']);
+  setMinPrice(MIN_PRICES_FOR_HOUSES[1]);
   setValidGuests(1);
+
   var fieldsetForm = noticeForm.querySelectorAll('fieldset');
 
   return {

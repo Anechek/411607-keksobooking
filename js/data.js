@@ -1,11 +1,9 @@
 'use strict';
-(function () {
+window.data = (function () {
   var AUTHORS_COUNT = 8;
   var AUTORS_NUMBERS = ['01', '02', '03', '04', '05', '06', '07', '08'];
   var IMG_STRING = 'img/avatars/userXX.png';
   var TITLE_OF_HOUSES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-  var INITIAL_ADDRESS_X = 'x:';
-  var INITIAL_ADDRESS_Y = 'y:';
   var TYPES_OF_HOUSES = ['flat', 'house', 'bungalo'];
   var COUNT_GUESTS = 3; // максимальное количество гостей в одной комнате
   var TIMES_CHECK_IN_OUT = ['12:00', '13:00', '14:00'];
@@ -70,7 +68,7 @@
             },
             offer: {
               title: numbersHouses[randomValueTitle],
-              address: INITIAL_ADDRESS_X + randomValueAddressX + ' ' + INITIAL_ADDRESS_Y + randomValueAddressY,
+              address: 'x: ' + randomValueAddressX + ' ' + 'y: ' + randomValueAddressY,
               price: getRandomIntegerValue(MIN_PRICE, MAX_PRICE),
               type: TYPES_OF_HOUSES[randomValueTypes],
               rooms: randomValueRooms,
@@ -92,6 +90,10 @@
     return array;
   }
 
-  window.adverts = getArrayAdverts();
+  var adverts = getArrayAdverts();
 
+  return {
+    TIMES_CHECK_IN_OUT: TIMES_CHECK_IN_OUT,
+    adverts: adverts
+  };
 })();

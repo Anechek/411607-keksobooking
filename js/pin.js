@@ -11,17 +11,15 @@ window.pin = (function () {
     var mapPinActive = document.querySelector('.map__pin--active');
     if (mapPinActive === null) {
       if (clickedElement !== window.map.mapPinMain) {
-        window.card.addAdvertOnMap(window.adverts[clickedElement.dataset.num]);
-        window.card.articleTemp.removeAttribute('hidden', '');
+        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTemp, true);
         window.card.addAdvertEscEvent();
       }
     } else {
       mapPinActive.classList.remove('map__pin--active');
       if (clickedElement === window.map.mapPinMain) {
-        window.card.articleTemp.setAttribute('hidden', '');
+        window.showCard(null, window.card.articleTemp, false);
       } else {
-        window.card.articleTemp.removeAttribute('hidden', '');
-        window.card.addAdvertOnMap(window.adverts[clickedElement.dataset.num]);
+        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTemp, true);
         window.card.addAdvertEscEvent();
       }
     }
