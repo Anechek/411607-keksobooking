@@ -33,7 +33,7 @@
       paragraphs[3].textContent = 'Заезд после ' + advert.offer.checkin + ',' + ' выезд до ' + advert.offer.checkout;
       paragraphs[4].textContent = advert.offer.description;
       element.querySelector('h4').textContent = getTitleDependOnType(advert.offer.type);
-      element.querySelector('.popup__avatar').setAttribute('src', advert.autor.avatar);
+      element.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
       var featuresElement = element.querySelector('.popup__features');
       // надо очистить все элементы li которые содержались изначально в шаблоне
       featuresElement.innerHTML = '';

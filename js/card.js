@@ -41,12 +41,13 @@ window.card = (function () {
   popupClose.addEventListener('click', onPopupCloseClick);
 
   return {
-    // addAdvertOnMap: addAdvertOnMap,
+
+    onAdvertEscPress: onAdvertEscPress,
 
     addAdvertEscEvent: function () {
       document.addEventListener('keydown', onAdvertEscPress);
     },
-
+    ESC_KEYCODE: ESC_KEYCODE,
     articleTemp: articleTemp
   };
 })();
