@@ -68,7 +68,7 @@ window.pin = (function () {
         button.style.left = '' + (advertsArray[i].location.x - MAP_PIN_WIDTH_HALF) + 'px';
         button.style.top = '' + (advertsArray[i].location.y - MAP_PIN_HEIGHT_PLUS10) + 'px';
         button.className = 'map__pin';
-        button.innerHTML = '<img src="' + advertsArray[i].autor.avatar + '" width="40" height="40" draggable="false">';
+        button.innerHTML = '<img src="' + advertsArray[i].author.avatar + '" width="40" height="40" draggable="false">';
         button.dataset.num = i;
         fragment.appendChild(button);
       }
