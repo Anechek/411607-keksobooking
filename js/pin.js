@@ -3,6 +3,8 @@ window.pin = (function () {
   var MAP_PIN_WIDTH_HALF = 20;
   var MAP_PIN_HEIGHT_PLUS10 = 50;
   var ENTER_KEYCODE = 13;
+  var DEBOUNCE_INTERVAL = 500;
+  var lastTimeout;
 
   // Функция, определяющая действия при клике на mapPin
 
@@ -29,12 +31,11 @@ window.pin = (function () {
   // Обрабочик для кнопок
 
   function addHandlersForAllButtons() {
-    var mapPins = document.querySelectorAll('.map__pin');
-    for (var i = 0; i < mapPins.length; i++) {
-      mapPins[i].addEventListener('click', function (evt) {
+    for (var i = 0; i < window.map.mapPins.length; i++) {
+      window.map.mapPins[i].addEventListener('click', function (evt) {
         onMapPinClick(evt);
       });
-      mapPins[i].addEventListener('keydown', function (evt) {
+      window.map.mapPins[i].addEventListener('keydown', function (evt) {
         if (evt.keyCode === ENTER_KEYCODE) {
           onMapPinClick(evt);
         }
@@ -42,12 +43,80 @@ window.pin = (function () {
     }
   }
 
+  // Функция для нахождения выбранного значения в селекте
+
+  var getSelectedOption = function (select) {
+    for (var i = 0; i < select.options.length; i++) {
+      var option = select.options[i];
+      if (option.selected) {
+        return option.value;
+      }
+    }
+    return null;
+  };
+
+  // Функция получает массив нажатых инпутов в фиелдсете
+
+  var getCheckedInput = function (inputs) {
+    var arr = [];
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].checked) {
+        arr.push(inputs[i].value);
+      }
+    }
+    return arr;
+  };
+
+  // Функция для задержки исполнения функции
+
+  var debounce = function (fun) {
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(fun, DEBOUNCE_INTERVAL);
+  };
+
+  // Функция для обработчика при любом изменении фильтра
+
+  function onFilterChange() {
+    debounce(function () {
+
+      // Подготавливаем переменные для фильтра
+
+      var form = document.forms[0];
+      var houseType = getSelectedOption(form.elements['housing-type']);
+      var priceType = getSelectedOption(form.elements['housing-price']);
+      var rooms = getSelectedOption(form.elements['housing-rooms']);
+      var guests = getSelectedOption(form.elements['housing-guests']);
+      var features = getCheckedInput(form.elements['housing-features'].elements);
+
+      // Показываем только те пины, которые соответствуют фильтру 
+
+      window.map.showPins(window.map.MAX_VISIBLE_PINS, houseType, priceType, rooms, guests, features);
+
+      // Если отфильтровался активный пин, то надо срыть карточку
+
+      var activePin = document.querySelector('.map__pin--active');
+      if (activePin !== null) {
+        if (activePin.hasAttribute('hidden')) {
+          window.showCard(null, window.card.articleTemp, false);
+          activePin.classList.remove('map__pin--active');
+        }
+      }
+    });
+  }
+
   // Делаем неактивными все поля формы
 
   window.form.makeActiveAllFields(false);
 
+  // Объявляем обработчик на измнение любого поля в фильтрах
+
+  window.card.filtersElement.addEventListener('change', onFilterChange);
+
   return {
     MAP_PIN_WIDTH_HALF: MAP_PIN_WIDTH_HALF,
+
     MAP_PIN_HEIGHT_PLUS10: MAP_PIN_HEIGHT_PLUS10,
 
     addHandlersForAllButtons: addHandlersForAllButtons,
