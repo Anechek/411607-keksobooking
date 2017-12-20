@@ -6,40 +6,41 @@ window.pin = (function () {
 
   // Функция, определяющая действия при клике на mapPin
 
-  function onMapPinClick(evt) {
+  var onMapPinClick = function (evt) {
     var clickedElement = evt.currentTarget;
-    var mapPinActive = document.querySelector('.map__pin--active');
-    if (mapPinActive === null) {
-      if (clickedElement !== window.map.mapPinMain) {
-        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTemp, true);
+    var mapPinActiveElement = document.querySelector('.map__pin--active');
+    if (mapPinActiveElement === null) {
+      if (clickedElement !== window.map.mapPinMainElement) {
+        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTempElement, true);
         window.card.addAdvertEscEvent();
       }
     } else {
-      mapPinActive.classList.remove('map__pin--active');
-      if (clickedElement === window.map.mapPinMain) {
-        window.showCard(null, window.card.articleTemp, false);
+      mapPinActiveElement.classList.remove('map__pin--active');
+      if (clickedElement === window.map.mapPinMainElement) {
+        window.showCard(null, window.card.articleTempElement, false);
       } else {
-        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTemp, true);
+        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTempElement, true);
         window.card.addAdvertEscEvent();
       }
     }
     clickedElement.classList.add('map__pin--active');
-  }
+  };
 
-  // Обрабочик для кнопок
+  // Обрабочик для кнопок. Вопрос наставнику! Есть необходимость разъяснить Базовый критерий 27.
+  // Что значит "удаляеются в момент их ИСЧЕЗНОВЕНИЯ". Исчезновение - это когда их удаляют из ДОМ дерева?
+  // Надо ли считать исчезновением то, что мы только хиденим кнопки.
+  // Надо ли удалять все эти eventListener'ы когда я в дальнейшем буду хиденить эти кноки?
 
-  function addHandlersForAllButtons(buttons) {
+  var addHandlersForAllButtons = function (buttons) {
     for (var i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener('click', function (evt) {
-        onMapPinClick(evt);
-      });
+      buttons[i].addEventListener('click', onMapPinClick);
       buttons[i].addEventListener('keydown', function (evt) {
         if (evt.keyCode === ENTER_KEYCODE) {
           onMapPinClick(evt);
         }
       });
     }
-  }
+  };
 
   // Функция получает массив нажатых инпутов в фиелдсете
 
@@ -55,8 +56,8 @@ window.pin = (function () {
 
   // Функция для обработчика при любом изменении фильтра
 
-  function onFilterChange() {
-    window.debounce(function () {
+  var onFilterChange = function () {
+    window.removeDebounce(function () {
 
       // Подготавливаем переменные для фильтра
 
@@ -73,14 +74,14 @@ window.pin = (function () {
 
       // Если отфильтровался активный пин, то надо скрыть карточку
 
-      var activePin = document.querySelector('.map__pin--active');
+      var activePinElement = document.querySelector('.map__pin--active');
 
-      if (activePin !== null && activePin.hasAttribute('hidden')) {
-        window.showCard(null, window.card.articleTemp, false);
-        activePin.classList.remove('map__pin--active');
+      if (activePinElement !== null && activePinElement.hasAttribute('hidden')) {
+        window.showCard(null, window.card.articleTempElement, false);
+        activePinElement.classList.remove('map__pin--active');
       }
     });
-  }
+  };
 
   // Функция для создания баттонов для каждого маппина
 
@@ -95,14 +96,14 @@ window.pin = (function () {
       button.dataset.num = i;
       fragment.appendChild(button);
     }
-    var mapPinsBlock = document.querySelector('.map__pins');
-    mapPinsBlock.appendChild(fragment);
+    var mapPinsBlockElement = document.querySelector('.map__pins');
+    mapPinsBlockElement.appendChild(fragment);
   };
 
   var removeActivePin = function () {
-    var mapPinActive = document.querySelector('.map__pin--active');
-    if (mapPinActive !== null) {
-      mapPinActive.classList.remove('map__pin--active');
+    var mapPinActiveElement = document.querySelector('.map__pin--active');
+    if (mapPinActiveElement !== null) {
+      mapPinActiveElement.classList.remove('map__pin--active');
     }
   };
 

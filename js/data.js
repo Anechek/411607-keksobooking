@@ -22,16 +22,19 @@ window.data = (function () {
 
   // Функция заполнения массива объявлений, взятых с сервера
 
-  function getArrayAdverts() {
+  var getArrayAdverts = function () {
     window.backend.load(function (response) {
+
+      // Вопрос наставнику! Вот в этом месте не могу избвиться от глобальной переменной. 
+
       window.data.adverts = response;
     }, onErrorLoadSave);
-  }
+  };
 
   var adverts = [];
   getArrayAdverts();
 
-  // Созадим DOM-элемент для отображения сообщения об ошибке.
+  // Создадим DOM-элемент для отображения сообщения об ошибке.
 
   var errorDiv = document.createElement('div');
   errorDiv.style = 'z-index: 100; padding: 15px; border: 1px solid #E32636; border-radius: 4px; color: #E32636; background-color: #FFC0CB; font-size: 20px';
