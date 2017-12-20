@@ -22,8 +22,8 @@ window.card = (function () {
   var advertsTemplate = document.querySelector('template').content;
   var newElement = advertsTemplate.cloneNode(true);
   var map = document.querySelector('.map');
-  var beforeElement = document.querySelector('.map__filters-container');
-  map.insertBefore(newElement, beforeElement);
+  var filtersElement = document.querySelector('.map__filters-container');
+  map.insertBefore(newElement, filtersElement);
 
   // Убираем с экрана объявление, которое появляется в начале
 
@@ -48,6 +48,7 @@ window.card = (function () {
       document.addEventListener('keydown', onAdvertEscPress);
     },
     ESC_KEYCODE: ESC_KEYCODE,
-    articleTemp: articleTemp
+    articleTemp: articleTemp,
+    filtersElement: filtersElement
   };
 })();
