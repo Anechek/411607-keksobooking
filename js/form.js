@@ -98,23 +98,23 @@ window.form = (function () {
   // При успешной отправке
 
   var onSuccessSubmit = function () {
-    noticeFormElement.reset();
+    noticeElement.reset();
   };
 
   // Функция для обработчика нажатия кнопки Опубликовать
 
   var onFormSubmit = function (evt) {
-    window.backend.save(new FormData(noticeFormElement), onSuccessSubmit, window.data.onErrorLoadSave);
+    window.backend.save(new FormData(noticeElement), onSuccessSubmit, window.data.onErrorLoadSave);
     evt.preventDefault();
   };
 
-  var noticeFormElement = document.querySelector('.notice__form');
-  noticeFormElement.addEventListener('submit', onFormSubmit);
+  var noticeElement = document.querySelector('.notice__form');
+  noticeElement.addEventListener('submit', onFormSubmit);
 
   // Обработчик ввода времени заезда
 
-  var timeInChangeElement = noticeFormElement.querySelector('#timein');
-  var timeOutChangeElement = noticeFormElement.querySelector('#timeout');
+  var timeInChangeElement = noticeElement.querySelector('#timein');
+  var timeOutChangeElement = noticeElement.querySelector('#timeout');
 
   timeInChangeElement.addEventListener('change', function (evt) {
     window.synchronizeFields(evt.target, timeOutChangeElement, TIMES_CHECK_IN_OUT, TIMES_CHECK_IN_OUT, syncValues);
@@ -126,8 +126,8 @@ window.form = (function () {
 
   // Обработчик ввода типа жилья
 
-  var typeChangeElement = noticeFormElement.querySelector('#type');
-  var priceChangeElement = noticeFormElement.querySelector('#price');
+  var typeChangeElement = noticeElement.querySelector('#type');
+  var priceChangeElement = noticeElement.querySelector('#price');
 
   typeChangeElement.addEventListener('change', function (evt) {
     window.synchronizeFields(evt.target, priceChangeElement, ALL_TYPES_OF_HOUSES, MIN_PRICES, syncValueWithMin);
@@ -135,17 +135,17 @@ window.form = (function () {
 
   // Обработчик ввода количества комнат
 
-  var roomsChangeElement = noticeFormElement.querySelector('#room_number');
-  var capacityChangeElement = noticeFormElement.querySelector('#capacity');
+  var roomsChangeElement = noticeElement.querySelector('#room_number');
+  var capacityChangeElement = noticeElement.querySelector('#capacity');
   var capacityArray = capacityChangeElement.querySelectorAll('option');
   roomsChangeElement.addEventListener('change', onRoomsChange);
   setMinPrice(MIN_PRICES[1]);
   setValidGuests(1);
 
-  var fieldsetArray = noticeFormElement.querySelectorAll('fieldset');
+  var fieldsetArray = noticeElement.querySelectorAll('fieldset');
 
   return {
-    noticeFormElement: noticeFormElement,
+    noticeElement: noticeElement,
 
     // Функция активации/деактивации полей формы
 

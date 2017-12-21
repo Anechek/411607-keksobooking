@@ -23,19 +23,20 @@
     var getTitleDependOnType = function (type) {
       return TITLE_TYPES_OF_HOUSES[type];
     };
-
     if (show) {
       element.querySelector('h3').textContent = advert.offer.title;
       var paragraphs = element.querySelectorAll('p');
       paragraphs[0].textContent = advert.offer.address;
-      paragraphs[1].innerHTML = '' + advert.offer.price + '&#x20bd;/ночь';
+      paragraphs[1].textContent = '' + advert.offer.price + '&#x20bd;/ночь';
       paragraphs[2].textContent = '' + advert.offer.rooms + ' ' + declineNumber(advert.offer.rooms, OPTIONS_NUMBERS_OF_ROOMS) + ' для ' + advert.offer.guests + ' ' + declineNumber(advert.offer.guests, OPTIONS_NUMBERS_OF_GUESTS);
       paragraphs[3].textContent = 'Заезд после ' + advert.offer.checkin + ',' + ' выезд до ' + advert.offer.checkout;
       paragraphs[4].textContent = advert.offer.description;
       element.querySelector('h4').textContent = getTitleDependOnType(advert.offer.type);
       element.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
       var featuresElement = element.querySelector('.popup__features');
+
       // надо очистить все элементы li которые содержались изначально в шаблоне
+
       featuresElement.innerHTML = '';
       var fragment = document.createDocumentFragment();
       advert.offer.features.forEach(function (v, i, arr) {

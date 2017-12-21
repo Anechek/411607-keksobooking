@@ -5,7 +5,7 @@ window.card = (function () {
   // Функция для обработчика события при клике popupCloseElement
 
   var onPopupCloseClick = function () {
-    window.pin.removeActivePin();
+    window.pin.removeActive();
     articleTempElement.setAttribute('hidden', '');
     document.removeEventListener('keydown', onAdvertEscPress);
   };
@@ -15,7 +15,7 @@ window.card = (function () {
   var onAdvertEscPress = function (evt) {
     if (evt.keyCode === ESC_KEYCODE) {
       articleTempElement.setAttribute('hidden', '');
-      window.pin.removeActivePin();
+      window.pin.removeActive();
     }
   };
 

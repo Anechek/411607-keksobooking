@@ -32,13 +32,13 @@ window.map = (function () {
         y: moveEvt.clientY
       };
 
-      var coordX = mapPinMainElement.offsetLeft - shift.x;
-      var coordY = mapPinMainElement.offsetTop - shift.y;
+      var coordX = pinMainElement.offsetLeft - shift.x;
+      var coordY = pinMainElement.offsetTop - shift.y;
 
       if (coordY > MIN_COORD_Y && coordY < MAX_COORD_Y) {
-        mapPinMainElement.style.top = coordY + 'px';
+        pinMainElement.style.top = coordY + 'px';
       }
-      mapPinMainElement.style.left = coordX + 'px';
+      pinMainElement.style.left = coordX + 'px';
 
       addressInputElement.value = 'x: ' + (coordX + window.pin.MAP_PIN_WIDTH_HALF) + ', y: ' + (coordY + window.pin.MAP_PIN_HEIGHT_PLUS10);
     };
@@ -134,7 +134,7 @@ window.map = (function () {
     var clickedElement = evt.currentTarget;
 
     clickedElement.classList.add('map__pin--active');
-    window.form.noticeFormElement.classList.remove('notice__form--disabled');
+    window.form.noticeElement.classList.remove('notice__form--disabled');
     window.showCard(null, window.card.articleTempElement, false);
     window.pin.addMapPins(window.data.adverts);
     mapPins = document.querySelectorAll('.map__pin');
@@ -142,21 +142,21 @@ window.map = (function () {
     window.form.makeActiveAllFields(true);
     document.querySelector('.map').classList.remove('map--faded');
     showPins(MAX_VISIBLE_PINS, ANY, ANY, ANY, ANY, []);
-    mapPinMainElement.removeEventListener('mouseup', onButtonMouseup);
+    pinMainElement.removeEventListener('mouseup', onButtonMouseup);
   };
 
   // Делаем обработчик для отпускания мышки на элементе .map__pin--main
 
-  var mapPinMainElement = document.querySelector('.map__pin--main');
-  var addressInputElement = window.form.noticeFormElement.querySelector('#address');
+  var pinMainElement = document.querySelector('.map__pin--main');
+  var addressInputElement = window.form.noticeElement.querySelector('#address');
 
-  mapPinMainElement.addEventListener('mouseup', onButtonMouseup);
-  mapPinMainElement.addEventListener('mousedown', onMainPinMouseDown);
+  pinMainElement.addEventListener('mouseup', onButtonMouseup);
+  pinMainElement.addEventListener('mousedown', onMainPinMouseDown);
 
   return {
     MAX_VISIBLE_PINS: MAX_VISIBLE_PINS,
 
-    mapPinMainElement: mapPinMainElement,
+    pinMainElement: pinMainElement,
     showPins: showPins
   };
 })();

@@ -10,13 +10,13 @@ window.pin = (function () {
     var clickedElement = evt.currentTarget;
     var mapPinActiveElement = document.querySelector('.map__pin--active');
     if (mapPinActiveElement === null) {
-      if (clickedElement !== window.map.mapPinMainElement) {
+      if (clickedElement !== window.map.pinMainElement) {
         window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTempElement, true);
         window.card.addAdvertEscEvent();
       }
     } else {
       mapPinActiveElement.classList.remove('map__pin--active');
-      if (clickedElement === window.map.mapPinMainElement) {
+      if (clickedElement === window.map.pinMainElement) {
         window.showCard(null, window.card.articleTempElement, false);
       } else {
         window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTempElement, true);
@@ -26,10 +26,7 @@ window.pin = (function () {
     clickedElement.classList.add('map__pin--active');
   };
 
-  // Обрабочик для кнопок. Вопрос наставнику! Есть необходимость разъяснить Базовый критерий 27.
-  // Что значит "удаляеются в момент их ИСЧЕЗНОВЕНИЯ". Исчезновение - это когда их удаляют из ДОМ дерева?
-  // Надо ли считать исчезновением то, что мы только хиденим кнопки.
-  // Надо ли удалять все эти eventListener'ы когда я в дальнейшем буду хиденить эти кноки?
+  // Обрабочик для кнопок
 
   var addHandlersForAllButtons = function (buttons) {
     for (var i = 0; i < buttons.length; i++) {
@@ -57,7 +54,7 @@ window.pin = (function () {
   // Функция для обработчика при любом изменении фильтра
 
   var onFilterChange = function () {
-    window.removeDebounce(function () {
+    window.debounce(function () {
 
       // Подготавливаем переменные для фильтра
 
@@ -92,15 +89,18 @@ window.pin = (function () {
       button.style.left = '' + (advertsArray[i].location.x - MAP_PIN_WIDTH_HALF) + 'px';
       button.style.top = '' + (advertsArray[i].location.y - MAP_PIN_HEIGHT_PLUS10) + 'px';
       button.className = 'map__pin';
-      button.innerHTML = '<img src="' + advertsArray[i].author.avatar + '" width="40" height="40" draggable="false">';
       button.dataset.num = i;
+      var imageElement = document.createElement('img');
+      imageElement.src = advertsArray[i].author.avatar;
+      imageElement.style = 'width: 40px; height: 40px; draggable: false;';
+      button.appendChild(imageElement);
       fragment.appendChild(button);
     }
     var mapPinsBlockElement = document.querySelector('.map__pins');
     mapPinsBlockElement.appendChild(fragment);
   };
 
-  var removeActivePin = function () {
+  var removeActive = function () {
     var mapPinActiveElement = document.querySelector('.map__pin--active');
     if (mapPinActiveElement !== null) {
       mapPinActiveElement.classList.remove('map__pin--active');
@@ -121,6 +121,6 @@ window.pin = (function () {
 
     addHandlersForAllButtons: addHandlersForAllButtons,
     addMapPins: addMapPins,
-    removeActivePin: removeActivePin
+    removeActive: removeActive
   };
 })();

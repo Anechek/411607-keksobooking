@@ -3,7 +3,7 @@
   var DEBOUNCE_INTERVAL = 500;
 
   var lastTimeout;
-  window.removeDebounce = function (debouncedFunction) {
+  window.debounce = function (debouncedFunction) {
     if (lastTimeout) {
       window.clearTimeout(lastTimeout);
     }
