@@ -2,11 +2,11 @@
 window.card = (function () {
   var ESC_KEYCODE = 27;
 
-  // Функция для обработчика события при клике popupClose
+  // Функция для обработчика события при клике popupCloseElement
 
   var onPopupCloseClick = function () {
-    window.pin.removeActivePin();
-    articleTemp.setAttribute('hidden', '');
+    window.pin.removeActive();
+    articleTempElement.setAttribute('hidden', '');
     document.removeEventListener('keydown', onAdvertEscPress);
   };
 
@@ -14,31 +14,31 @@ window.card = (function () {
 
   var onAdvertEscPress = function (evt) {
     if (evt.keyCode === ESC_KEYCODE) {
-      articleTemp.setAttribute('hidden', '');
-      window.pin.removeActivePin();
+      articleTempElement.setAttribute('hidden', '');
+      window.pin.removeActive();
     }
   };
 
   var advertsTemplate = document.querySelector('template').content;
   var newElement = advertsTemplate.cloneNode(true);
-  var map = document.querySelector('.map');
+  var mapElement = document.querySelector('.map');
   var filtersElement = document.querySelector('.map__filters-container');
-  map.insertBefore(newElement, filtersElement);
+  mapElement.insertBefore(newElement, filtersElement);
 
   // Убираем с экрана объявление, которое появляется в начале
 
-  var articleTemp = document.querySelector('article');
-  articleTemp.setAttribute('hidden', '');
+  var articleTempElement = document.querySelector('article');
+  articleTempElement.setAttribute('hidden', '');
 
   // Под объявлением оказался еще один баттон. Скрываем его тоже.
 
-  var buttonTemp = document.querySelectorAll('button.map__pin');
-  buttonTemp[buttonTemp.length - 1].setAttribute('hidden', '');
+  var buttons = document.querySelectorAll('button.map__pin');
+  buttons[buttons.length - 1].setAttribute('hidden', '');
 
-  // Обаботчик события при клике popupClose
+  // Обаботчик события при клике popupCloseElement
 
-  var popupClose = articleTemp.querySelector('.popup__close');
-  popupClose.addEventListener('click', onPopupCloseClick);
+  var popupCloseElement = articleTempElement.querySelector('.popup__close');
+  popupCloseElement.addEventListener('click', onPopupCloseClick);
 
   return {
 
@@ -48,7 +48,7 @@ window.card = (function () {
       document.addEventListener('keydown', onAdvertEscPress);
     },
     ESC_KEYCODE: ESC_KEYCODE,
-    articleTemp: articleTemp,
+    articleTempElement: articleTempElement,
     filtersElement: filtersElement
   };
 })();

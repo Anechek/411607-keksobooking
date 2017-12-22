@@ -6,40 +6,38 @@ window.pin = (function () {
 
   // Функция, определяющая действия при клике на mapPin
 
-  function onMapPinClick(evt) {
+  var onMapPinClick = function (evt) {
     var clickedElement = evt.currentTarget;
-    var mapPinActive = document.querySelector('.map__pin--active');
-    if (mapPinActive === null) {
-      if (clickedElement !== window.map.mapPinMain) {
-        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTemp, true);
+    var mapPinActiveElement = document.querySelector('.map__pin--active');
+    if (mapPinActiveElement === null) {
+      if (clickedElement !== window.map.pinMainElement) {
+        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTempElement, true);
         window.card.addAdvertEscEvent();
       }
     } else {
-      mapPinActive.classList.remove('map__pin--active');
-      if (clickedElement === window.map.mapPinMain) {
-        window.showCard(null, window.card.articleTemp, false);
+      mapPinActiveElement.classList.remove('map__pin--active');
+      if (clickedElement === window.map.pinMainElement) {
+        window.showCard(null, window.card.articleTempElement, false);
       } else {
-        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTemp, true);
+        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTempElement, true);
         window.card.addAdvertEscEvent();
       }
     }
     clickedElement.classList.add('map__pin--active');
-  }
+  };
 
   // Обрабочик для кнопок
 
-  function addHandlersForAllButtons(buttons) {
+  var addHandlersForAllButtons = function (buttons) {
     for (var i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener('click', function (evt) {
-        onMapPinClick(evt);
-      });
+      buttons[i].addEventListener('click', onMapPinClick);
       buttons[i].addEventListener('keydown', function (evt) {
         if (evt.keyCode === ENTER_KEYCODE) {
           onMapPinClick(evt);
         }
       });
     }
-  }
+  };
 
   // Функция получает массив нажатых инпутов в фиелдсете
 
@@ -55,7 +53,7 @@ window.pin = (function () {
 
   // Функция для обработчика при любом изменении фильтра
 
-  function onFilterChange() {
+  var onFilterChange = function () {
     window.debounce(function () {
 
       // Подготавливаем переменные для фильтра
@@ -73,14 +71,14 @@ window.pin = (function () {
 
       // Если отфильтровался активный пин, то надо скрыть карточку
 
-      var activePin = document.querySelector('.map__pin--active');
+      var activePinElement = document.querySelector('.map__pin--active');
 
-      if (activePin !== null && activePin.hasAttribute('hidden')) {
-        window.showCard(null, window.card.articleTemp, false);
-        activePin.classList.remove('map__pin--active');
+      if (activePinElement !== null && activePinElement.hasAttribute('hidden')) {
+        window.showCard(null, window.card.articleTempElement, false);
+        activePinElement.classList.remove('map__pin--active');
       }
     });
-  }
+  };
 
   // Функция для создания баттонов для каждого маппина
 
@@ -91,18 +89,21 @@ window.pin = (function () {
       button.style.left = '' + (advertsArray[i].location.x - MAP_PIN_WIDTH_HALF) + 'px';
       button.style.top = '' + (advertsArray[i].location.y - MAP_PIN_HEIGHT_PLUS10) + 'px';
       button.className = 'map__pin';
-      button.innerHTML = '<img src="' + advertsArray[i].author.avatar + '" width="40" height="40" draggable="false">';
       button.dataset.num = i;
+      var imageElement = document.createElement('img');
+      imageElement.src = advertsArray[i].author.avatar;
+      imageElement.style = 'width: 40px; height: 40px; draggable: false;';
+      button.appendChild(imageElement);
       fragment.appendChild(button);
     }
-    var mapPinsBlock = document.querySelector('.map__pins');
-    mapPinsBlock.appendChild(fragment);
+    var mapPinsBlockElement = document.querySelector('.map__pins');
+    mapPinsBlockElement.appendChild(fragment);
   };
 
-  var removeActivePin = function () {
-    var mapPinActive = document.querySelector('.map__pin--active');
-    if (mapPinActive !== null) {
-      mapPinActive.classList.remove('map__pin--active');
+  var removeActive = function () {
+    var mapPinActiveElement = document.querySelector('.map__pin--active');
+    if (mapPinActiveElement !== null) {
+      mapPinActiveElement.classList.remove('map__pin--active');
     }
   };
 
@@ -120,6 +121,6 @@ window.pin = (function () {
 
     addHandlersForAllButtons: addHandlersForAllButtons,
     addMapPins: addMapPins,
-    removeActivePin: removeActivePin
+    removeActive: removeActive
   };
 })();

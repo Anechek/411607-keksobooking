@@ -32,15 +32,15 @@ window.map = (function () {
         y: moveEvt.clientY
       };
 
-      var coordX = mapPinMain.offsetLeft - shift.x;
-      var coordY = mapPinMain.offsetTop - shift.y;
+      var coordX = pinMainElement.offsetLeft - shift.x;
+      var coordY = pinMainElement.offsetTop - shift.y;
 
       if (coordY > MIN_COORD_Y && coordY < MAX_COORD_Y) {
-        mapPinMain.style.top = coordY + 'px';
+        pinMainElement.style.top = coordY + 'px';
       }
-      mapPinMain.style.left = coordX + 'px';
+      pinMainElement.style.left = coordX + 'px';
 
-      addressInput.value = 'x: ' + (coordX + window.pin.MAP_PIN_WIDTH_HALF) + ', y: ' + (coordY + window.pin.MAP_PIN_HEIGHT_PLUS10);
+      addressInputElement.value = 'x: ' + (coordX + window.pin.MAP_PIN_WIDTH_HALF) + ', y: ' + (coordY + window.pin.MAP_PIN_HEIGHT_PLUS10);
     };
 
     // Функция обработки события при отпускании кнопки мыши
@@ -134,29 +134,29 @@ window.map = (function () {
     var clickedElement = evt.currentTarget;
 
     clickedElement.classList.add('map__pin--active');
-    window.form.noticeForm.classList.remove('notice__form--disabled');
-    window.showCard(null, window.card.articleTemp, false);
+    window.form.noticeElement.classList.remove('notice__form--disabled');
+    window.showCard(null, window.card.articleTempElement, false);
     window.pin.addMapPins(window.data.adverts);
     mapPins = document.querySelectorAll('.map__pin');
     window.pin.addHandlersForAllButtons(mapPins);
     window.form.makeActiveAllFields(true);
     document.querySelector('.map').classList.remove('map--faded');
     showPins(MAX_VISIBLE_PINS, ANY, ANY, ANY, ANY, []);
-    mapPinMain.removeEventListener('mouseup', onButtonMouseup);
+    pinMainElement.removeEventListener('mouseup', onButtonMouseup);
   };
 
   // Делаем обработчик для отпускания мышки на элементе .map__pin--main
 
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var addressInput = window.form.noticeForm.querySelector('#address');
+  var pinMainElement = document.querySelector('.map__pin--main');
+  var addressInputElement = window.form.noticeElement.querySelector('#address');
 
-  mapPinMain.addEventListener('mouseup', onButtonMouseup);
-  mapPinMain.addEventListener('mousedown', onMainPinMouseDown);
+  pinMainElement.addEventListener('mouseup', onButtonMouseup);
+  pinMainElement.addEventListener('mousedown', onMainPinMouseDown);
 
   return {
     MAX_VISIBLE_PINS: MAX_VISIBLE_PINS,
 
-    mapPinMain: mapPinMain,
+    pinMainElement: pinMainElement,
     showPins: showPins
   };
 })();
