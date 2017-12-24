@@ -1,5 +1,5 @@
 'use strict';
-window.data = (function () {
+(function () {
 
   // Функция для обработки нажатия кавиши ESC для закрытия сообщения об ошибке
 
@@ -14,13 +14,7 @@ window.data = (function () {
   // При возникновении ошибки во время получения и отправки на сервер
 
   var onErrorLoadSave = function (errorMessage) {
-    var strongElement = document.createElement('strong');
     strongElement.textContent = errorMessage;
-    errorDivElement.appendChild(strongElement);
-    var pElement = document.createElement('p');
-    pElement.textContent = 'Убрать сообщение об ошибке - ESC';
-    pElement.style = 'font-size: 15px';
-    errorDivElement.appendChild(pElement);
     errorDivElement.removeAttribute('hidden', '');
     document.removeEventListener('keydown', window.card.onAdvertEscPress);
     document.addEventListener('keydown', onErrorDivEscPress);
@@ -49,10 +43,17 @@ window.data = (function () {
   errorDivElement.style.top = '200px';
   errorDivElement.style.width = '40%';
   errorDivElement.setAttribute('hidden', '');
+  var strongElement = document.createElement('strong');
+  errorDivElement.appendChild(strongElement);
+  var paragraphElement = document.createElement('p');
+  paragraphElement.textContent = 'Убрать сообщение об ошибке - ESC';
+  paragraphElement.style = 'font-size: 15px';
+  errorDivElement.appendChild(paragraphElement);
   document.body.appendChild(errorDivElement);
 
-  return {
+  window.data = {
     adverts: adverts,
+
     onErrorLoadSave: onErrorLoadSave
   };
 })();

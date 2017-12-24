@@ -1,5 +1,5 @@
 'use strict';
-window.pin = (function () {
+(function () {
   var MAP_PIN_WIDTH_HALF = 20;
   var MAP_PIN_HEIGHT_PLUS10 = 50;
   var ENTER_KEYCODE = 13;
@@ -11,7 +11,7 @@ window.pin = (function () {
     var mapPinActiveElement = document.querySelector('.map__pin--active');
     if (mapPinActiveElement === null) {
       if (clickedElement !== window.map.pinMainElement) {
-        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTempElement, true);
+        window.showCard(window.data.adverts[clickedElement.dataset.number], window.card.articleTempElement, true);
         window.card.addAdvertEscEvent();
       }
     } else {
@@ -19,7 +19,7 @@ window.pin = (function () {
       if (clickedElement === window.map.pinMainElement) {
         window.showCard(null, window.card.articleTempElement, false);
       } else {
-        window.showCard(window.data.adverts[clickedElement.dataset.num], window.card.articleTempElement, true);
+        window.showCard(window.data.adverts[clickedElement.dataset.number], window.card.articleTempElement, true);
         window.card.addAdvertEscEvent();
       }
     }
@@ -42,13 +42,13 @@ window.pin = (function () {
   // Функция получает массив нажатых инпутов в фиелдсете
 
   var getCheckedInput = function (inputs) {
-    var arr = [];
+    var array = [];
     for (var i = 0; i < inputs.length; i++) {
       if (inputs[i].checked) {
-        arr.push(inputs[i].value);
+        array.push(inputs[i].value);
       }
     }
-    return arr;
+    return array;
   };
 
   // Функция для обработчика при любом изменении фильтра
@@ -67,7 +67,7 @@ window.pin = (function () {
 
       // Показываем только те пины, которые соответствуют фильтру 
 
-      window.map.showPins(window.map.MAX_VISIBLE_PINS, houseType, priceType, rooms, guests, features);
+      window.map.showPins(window.map.MAXIMUM_VISIBLE_PINS, houseType, priceType, rooms, guests, features);
 
       // Если отфильтровался активный пин, то надо скрыть карточку
 
@@ -89,7 +89,7 @@ window.pin = (function () {
       button.style.left = '' + (advertsArray[i].location.x - MAP_PIN_WIDTH_HALF) + 'px';
       button.style.top = '' + (advertsArray[i].location.y - MAP_PIN_HEIGHT_PLUS10) + 'px';
       button.className = 'map__pin';
-      button.dataset.num = i;
+      button.dataset.number = i;
       var imageElement = document.createElement('img');
       imageElement.src = advertsArray[i].author.avatar;
       imageElement.style = 'width: 40px; height: 40px; draggable: false;';
@@ -115,7 +115,7 @@ window.pin = (function () {
 
   window.card.filtersElement.addEventListener('change', onFilterChange);
 
-  return {
+  window.pin = {
     MAP_PIN_WIDTH_HALF: MAP_PIN_WIDTH_HALF,
     MAP_PIN_HEIGHT_PLUS10: MAP_PIN_HEIGHT_PLUS10,
 

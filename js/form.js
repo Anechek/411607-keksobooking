@@ -1,8 +1,8 @@
 'use strict';
-window.form = (function () {
+(function () {
   var ALL_TYPES_OF_HOUSES = ['bungalo', 'flat', 'house', 'palace'];
-  var MIN_PRICES = ['0', '1000', '5000', '10000'];
-  var MAX_COUNT_GUESTS = 100;
+  var MINIMUM_PRICES = ['0', '1000', '5000', '10000'];
+  var MAXIMUM_COUNT_ROOMS = 100;
   var TIMES_CHECK_IN_OUT = ['12:00', '13:00', '14:00'];
 
   // Функция для обработчика ввода времени заезда и выезда
@@ -13,31 +13,26 @@ window.form = (function () {
 
   // Функция для обработчика ввода типа жилья
 
-  var syncValueWithMin = function (element, value) {
+  var syncValueWithMinimum = function (element, value) {
     element.min = value;
   };
 
-  var setMinPrice = function (minPrice) {
-    priceChangeElement.min = minPrice;
+  var setMinimumPrice = function (minimumPrice) {
+    priceChangeElement.min = minimumPrice;
   };
 
   // Функция поиска атрибута selected
 
   var getSelectedCapacity = function () {
-    for (var i = 0; i < capacityArray.length; i++) {
-      if (capacityArray[i].hasAttribute('selected')) {
-        return i;
-      }
-    }
-    return false;
+    return capacityChangeElement.options.selectedIndex;
   };
 
   // Функция установки атрибута selected
 
   var setSelectedCapacity = function (guests) {
-    for (var i = 0; i < capacityArray.length; i++) {
-      if (Number(capacityArray[i].value) === guests) {
-        capacityArray[i].setAttribute('selected', '');
+    for (var i = 0; i < capacityChangeElement.options.length; i++) {
+      if (Number(capacityChangeElement.options[i].value) === guests) {
+        capacityChangeElement.options[i].selected = true;
       }
     }
   };
@@ -45,9 +40,9 @@ window.form = (function () {
   // Функция установки валидного количества гостей в зависимости количества комнат
 
   var setValidGuests = function (rooms) {
-    if (capacityArray[getSelectedCapacity()].value !== rooms) {
-      capacityArray[getSelectedCapacity()].removeAttribute('selected', '');
-      if (rooms === MAX_COUNT_GUESTS) {
+    if (capacityChangeElement.options[getSelectedCapacity()].value !== rooms) {
+      capacityChangeElement.options[getSelectedCapacity()].selected = false;
+      if (rooms === MAXIMUM_COUNT_ROOMS) {
         setSelectedCapacity(0);
       } else {
         setSelectedCapacity(1);
@@ -58,18 +53,22 @@ window.form = (function () {
   // этой функцией дисаблим все option для capacity
 
   var disableAllCapacities = function () {
-    for (var i = 0; i < capacityArray.length; i++) {
-      capacityArray[i].setAttribute('hidden', '');
+    for (var i = 0; i < capacityChangeElement.options.length; i++) {
+      capacityChangeElement.options[i].setAttribute('hidden', '');
     }
   };
 
   // эта функция открывает первые num options в capacity
 
-  var openCapacities = function (num) {
-    for (var i = 1; i <= num; i++) {
-      for (var j = 0; j < capacityArray.length; j++) {
-        if (Number(capacityArray[j].value) === i) {
-          capacityArray[j].removeAttribute('hidden', '');
+  var openCapacities = function (number) {
+    if (number === MAXIMUM_COUNT_ROOMS) {
+      capacityChangeElement.options[capacityChangeElement.options.length - 1].removeAttribute('hidden', '');
+    } else {
+      for (var i = 1; i <= number; i++) {
+        for (var j = 0; j < capacityChangeElement.options.length; j++) {
+          if (Number(capacityChangeElement.options[j].value) === i) {
+            capacityChangeElement.options[j].removeAttribute('hidden', '');
+          }
         }
       }
     }
@@ -80,25 +79,29 @@ window.form = (function () {
   var onRoomsChange = function (evt) {
     var roomValue = +evt.target.value;
     disableAllCapacities();
-    if (roomValue === MAX_COUNT_GUESTS) {
-      setValidGuests(MAX_COUNT_GUESTS);
-      for (var i = 0; i < capacityArray.length; i++) {
-        if (Number(capacityArray[i].value) === 0) {
-          capacityArray[i].removeAttribute('hidden', '');
-        }
-      }
+    if (roomValue === MAXIMUM_COUNT_ROOMS) {
+      setValidGuests(MAXIMUM_COUNT_ROOMS);
     } else {
       setValidGuests(1);
-      for (var j = 1; j <= roomValue; j++) {
-        openCapacities(j);
-      }
     }
+    openCapacities(roomValue);
+  };
+
+  var removeBoxShadow = function () {
+    priceChangeElement.style.boxShadow = 'none';
+    titleChangeElement.style.boxShadow = 'none';
   };
 
   // При успешной отправке
 
   var onSuccessSubmit = function () {
     noticeElement.reset();
+    window.map.setInitialAddress();
+    setMinimumPrice(MINIMUM_PRICES[1]);
+    disableAllCapacities();
+    setValidGuests(1);
+    openCapacities(1);
+    removeBoxShadow();
   };
 
   // Функция для обработчика нажатия кнопки Опубликовать
@@ -128,33 +131,34 @@ window.form = (function () {
 
   var typeChangeElement = noticeElement.querySelector('#type');
   var priceChangeElement = noticeElement.querySelector('#price');
+  var titleChangeElement = noticeElement.querySelector('#title');
 
   typeChangeElement.addEventListener('change', function (evt) {
-    window.synchronizeFields(evt.target, priceChangeElement, ALL_TYPES_OF_HOUSES, MIN_PRICES, syncValueWithMin);
+    window.synchronizeFields(evt.target, priceChangeElement, ALL_TYPES_OF_HOUSES, MINIMUM_PRICES, syncValueWithMinimum);
   });
-
-  // Обработчик ввода количества комнат
 
   var roomsChangeElement = noticeElement.querySelector('#room_number');
   var capacityChangeElement = noticeElement.querySelector('#capacity');
-  var capacityArray = capacityChangeElement.querySelectorAll('option');
+
+  // Обработчик ввода количества комнат
+
   roomsChangeElement.addEventListener('change', onRoomsChange);
-  setMinPrice(MIN_PRICES[1]);
+  setMinimumPrice(MINIMUM_PRICES[1]);
+  disableAllCapacities();
   setValidGuests(1);
+  openCapacities(1);
 
-  var fieldsetArray = noticeElement.querySelectorAll('fieldset');
-
-  return {
+  window.form = {
     noticeElement: noticeElement,
 
     // Функция активации/деактивации полей формы
 
     makeActiveAllFields: function (isActive) {
-      for (var i = 0; i < fieldsetArray.length; i++) {
+      for (var i = 0; i < noticeElement.elements.length; i++) {
         if (isActive) {
-          fieldsetArray[i].removeAttribute('disabled', '');
+          noticeElement.elements[i].removeAttribute('disabled', '');
         } else {
-          fieldsetArray[i].setAttribute('disabled', '');
+          noticeElement.elements[i].setAttribute('disabled', '');
         }
       }
     }

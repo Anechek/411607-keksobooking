@@ -1,8 +1,8 @@
 'use strict';
-window.map = (function () {
-  var MIN_COORD_Y = 100;
-  var MAX_COORD_Y = 500;
-  var MAX_VISIBLE_PINS = 5;
+(function () {
+  var MINIMUM_COORDINATE_Y = 100;
+  var MAXIMUM_COORDINATE_Y = 500;
+  var MAXIMUM_VISIBLE_PINS = 5;
   var ANY = 'any';
   var MIDDLE = 'middle';
   var LOW = 'low';
@@ -10,11 +10,12 @@ window.map = (function () {
   var PRICE_LOW_LIMIT = '10000';
   var PRICE_HIGH_LIMIT = '50000';
 
-  var mapPins;
+  var mapPinElements;
 
   var onMainPinMouseDown = function (evt) {
     evt.preventDefault();
-    var startCoords = {
+
+    var startCoordinates = {
       x: evt.clientX,
       y: evt.clientY
     };
@@ -23,24 +24,24 @@ window.map = (function () {
       moveEvt.preventDefault();
 
       var shift = {
-        x: startCoords.x - moveEvt.clientX,
-        y: startCoords.y - moveEvt.clientY
+        x: startCoordinates.x - moveEvt.clientX,
+        y: startCoordinates.y - moveEvt.clientY
       };
 
-      startCoords = {
+      startCoordinates = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
 
-      var coordX = pinMainElement.offsetLeft - shift.x;
-      var coordY = pinMainElement.offsetTop - shift.y;
+      var coordinateX = pinMainElement.offsetLeft - shift.x;
+      var coordinateY = pinMainElement.offsetTop - shift.y;
 
-      if (coordY > MIN_COORD_Y && coordY < MAX_COORD_Y) {
-        pinMainElement.style.top = coordY + 'px';
+      if (coordinateY > MINIMUM_COORDINATE_Y && coordinateY < MAXIMUM_COORDINATE_Y) {
+        pinMainElement.style.top = coordinateY + 'px';
       }
-      pinMainElement.style.left = coordX + 'px';
+      pinMainElement.style.left = coordinateX + 'px';
 
-      addressInputElement.value = 'x: ' + (coordX + window.pin.MAP_PIN_WIDTH_HALF) + ', y: ' + (coordY + window.pin.MAP_PIN_HEIGHT_PLUS10);
+      addressInputElement.value = 'x: ' + (coordinateX + window.pin.MAP_PIN_WIDTH_HALF) + ', y: ' + (coordinateY + window.pin.MAP_PIN_HEIGHT_PLUS10);
     };
 
     // Функция обработки события при отпускании кнопки мыши
@@ -53,6 +54,12 @@ window.map = (function () {
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+  };
+
+  var setInitialAddress = function () {
+    pinMainElement.style.top = initialCoordinates.y;
+    pinMainElement.style.left = initialCoordinates.x;
+    addressInputElement.value = 'x: ' + (initialAddress.x + window.pin.MAP_PIN_WIDTH_HALF) + ', y: ' + (initialAddress.y + window.pin.MAP_PIN_HEIGHT_PLUS10);
   };
 
   // Функция для скрытия всех пинов
@@ -107,7 +114,7 @@ window.map = (function () {
   // Функция для отображения пинов
 
   var showPins = function (count, houseFilter, priceFilter, roomsFilter, guestsFiter, features) {
-    hideAllPins(mapPins);
+    hideAllPins(mapPinElements);
     var filteredAdverts = window.data.adverts.map(function (advert, index) {
       advert.mainIndex = index;
       return advert;
@@ -120,9 +127,9 @@ window.map = (function () {
     // Осталось только отобразить все отфильтрованные Пины
 
     filteredAdverts.forEach(function (element) {
-      for (var i = 1; i < mapPins.length; i++) {
-        if (parseInt(mapPins[i].dataset.num, 10) === element.mainIndex) {
-          mapPins[i].removeAttribute('hidden', '');
+      for (var i = 1; i < mapPinElements.length; i++) {
+        if (parseInt(mapPinElements[i].dataset.number, 10) === element.mainIndex) {
+          mapPinElements[i].removeAttribute('hidden', '');
         }
       }
     });
@@ -132,31 +139,44 @@ window.map = (function () {
 
   var onButtonMouseup = function (evt) {
     var clickedElement = evt.currentTarget;
-
     clickedElement.classList.add('map__pin--active');
     window.form.noticeElement.classList.remove('notice__form--disabled');
     window.showCard(null, window.card.articleTempElement, false);
     window.pin.addMapPins(window.data.adverts);
-    mapPins = document.querySelectorAll('.map__pin');
-    window.pin.addHandlersForAllButtons(mapPins);
+    mapPinElements = document.querySelectorAll('.map__pin');
+    window.pin.addHandlersForAllButtons(mapPinElements);
     window.form.makeActiveAllFields(true);
     document.querySelector('.map').classList.remove('map--faded');
-    showPins(MAX_VISIBLE_PINS, ANY, ANY, ANY, ANY, []);
+    showPins(MAXIMUM_VISIBLE_PINS, ANY, ANY, ANY, ANY, []);
     pinMainElement.removeEventListener('mouseup', onButtonMouseup);
   };
 
   // Делаем обработчик для отпускания мышки на элементе .map__pin--main
 
   var pinMainElement = document.querySelector('.map__pin--main');
-  var addressInputElement = window.form.noticeElement.querySelector('#address');
 
   pinMainElement.addEventListener('mouseup', onButtonMouseup);
   pinMainElement.addEventListener('mousedown', onMainPinMouseDown);
 
-  return {
-    MAX_VISIBLE_PINS: MAX_VISIBLE_PINS,
+  // Запоминаем первоначальное положение пина и соответсвующий ему адрес
+
+  var initialCoordinates = {
+    x: pinMainElement.style.left,
+    y: pinMainElement.style.top
+  };
+  var initialAddress = {
+    x: pinMainElement.offsetLeft,
+    y: pinMainElement.offsetTop
+  };
+
+  var addressInputElement = window.form.noticeElement.querySelector('#address');
+
+  window.map = {
+    MAXIMUM_VISIBLE_PINS: MAXIMUM_VISIBLE_PINS,
 
     pinMainElement: pinMainElement,
+
+    setInitialAddress: setInitialAddress,
     showPins: showPins
   };
 })();

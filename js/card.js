@@ -1,5 +1,5 @@
 'use strict';
-window.card = (function () {
+(function () {
   var ESC_KEYCODE = 27;
 
   // Функция для обработчика события при клике popupCloseElement
@@ -32,23 +32,23 @@ window.card = (function () {
 
   // Под объявлением оказался еще один баттон. Скрываем его тоже.
 
-  var buttons = document.querySelectorAll('button.map__pin');
-  buttons[buttons.length - 1].setAttribute('hidden', '');
+  var buttonElements = document.querySelectorAll('button.map__pin');
+  buttonElements[buttonElements.length - 1].setAttribute('hidden', '');
 
   // Обаботчик события при клике popupCloseElement
 
   var popupCloseElement = articleTempElement.querySelector('.popup__close');
   popupCloseElement.addEventListener('click', onPopupCloseClick);
 
-  return {
+  window.card = {
+    ESC_KEYCODE: ESC_KEYCODE,
+    articleTempElement: articleTempElement,
+    filtersElement: filtersElement,
 
     onAdvertEscPress: onAdvertEscPress,
 
     addAdvertEscEvent: function () {
       document.addEventListener('keydown', onAdvertEscPress);
-    },
-    ESC_KEYCODE: ESC_KEYCODE,
-    articleTempElement: articleTempElement,
-    filtersElement: filtersElement
+    }
   };
 })();
