@@ -4,6 +4,8 @@
   var MINIMUM_PRICES = ['0', '1000', '5000', '10000'];
   var MAXIMUM_COUNT_ROOMS = 100;
   var TIMES_CHECK_IN_OUT = ['12:00', '13:00', '14:00'];
+  var MININIMUM_LENGTH = 30;
+  var MAXIMUM_LENGTH = 100;
 
   // Функция для обработчика ввода времени заезда и выезда
 
@@ -107,7 +109,7 @@
   // Функция для обработчика нажатия кнопки Опубликовать
 
   var onFormSubmit = function (evt) {
-    window.backend.save(new FormData(noticeElement), onSuccessSubmit, window.data.onErrorLoadSave);
+    window.server.save(new FormData(noticeElement), onSuccessSubmit, window.data.onErrorLoadSave);
     evt.preventDefault();
   };
 
@@ -132,6 +134,17 @@
   var typeChangeElement = noticeElement.querySelector('#type');
   var priceChangeElement = noticeElement.querySelector('#price');
   var titleChangeElement = noticeElement.querySelector('#title');
+
+  titleChangeElement.addEventListener('input', function (evt) {
+    var target = evt.target;
+    if (target.value.length < MININIMUM_LENGTH) {
+      target.setCustomValidity('Имя должно состоять минимум из 30-ти символов');
+    } else if (target.value.length > MAXIMUM_LENGTH) {
+      target.setCustomValidity('Имя должно состоять максимум из 100 символов');
+    } else {
+      target.setCustomValidity('');
+    }
+  });
 
   typeChangeElement.addEventListener('change', function (evt) {
     window.synchronizeFields(evt.target, priceChangeElement, ALL_TYPES_OF_HOUSES, MINIMUM_PRICES, syncValueWithMinimum);

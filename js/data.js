@@ -23,7 +23,7 @@
   // Функция заполнения массива объявлений, взятых с сервера
 
   var getArrayAdverts = function () {
-    window.backend.load(function (response) {
+    window.server.load(function (response) {
       window.data.adverts = response;
     }, onErrorLoadSave);
   };
@@ -34,7 +34,13 @@
   // Создадим DOM-элемент для отображения сообщения об ошибке.
 
   var errorDivElement = document.createElement('div');
-  errorDivElement.style = 'z-index: 100; padding: 15px; border: 1px solid #E32636; border-radius: 4px; color: #E32636; background-color: #FFC0CB; font-size: 25px';
+  errorDivElement.style.zIndex = 100;
+  errorDivElement.style.padding = '15px';
+  errorDivElement.style.border = '1px solid #E32636';
+  errorDivElement.style.borderRadius = '4px';
+  errorDivElement.style.color = '#E32636';
+  errorDivElement.style.backgroundColor = '#FFC0CB';
+  errorDivElement.style.fontSize = '25px';
   errorDivElement.style.textAlign = 'center';
   errorDivElement.style.margin = 'auto';
   errorDivElement.style.position = 'fixed';
@@ -47,7 +53,7 @@
   errorDivElement.appendChild(strongElement);
   var paragraphElement = document.createElement('p');
   paragraphElement.textContent = 'Убрать сообщение об ошибке - ESC';
-  paragraphElement.style = 'font-size: 15px';
+  paragraphElement.style.fontSize = '15px';
   errorDivElement.appendChild(paragraphElement);
   document.body.appendChild(errorDivElement);
 

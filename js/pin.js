@@ -92,7 +92,9 @@
       button.dataset.number = i;
       var imageElement = document.createElement('img');
       imageElement.src = advertsArray[i].author.avatar;
-      imageElement.style = 'width: 40px; height: 40px; draggable: false;';
+      imageElement.style.width = '40px';
+      imageElement.style.height = '40px';
+      imageElement.style.draggable = false;
       button.appendChild(imageElement);
       fragment.appendChild(button);
     }

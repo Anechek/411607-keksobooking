@@ -4,7 +4,7 @@
   var SAVE_URL = 'https://1510.dump.academy/keksobooking';
   var TIMEOUT = 10000;
 
-  window.backend = {
+  window.server = {
 
     // Функция загрузки с сервера
 
