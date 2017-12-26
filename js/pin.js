@@ -11,15 +11,15 @@
     var mapPinActiveElement = document.querySelector('.map__pin--active');
     if (mapPinActiveElement === null) {
       if (clickedElement !== window.map.pinMainElement) {
-        window.showCard(window.data.adverts[clickedElement.dataset.number], window.card.articleTempElement, true);
+        window.showCard(window.data.adverts[clickedElement.dataset.number], window.card.articleElement, true);
         window.card.addAdvertEscEvent();
       }
     } else {
       mapPinActiveElement.classList.remove('map__pin--active');
       if (clickedElement === window.map.pinMainElement) {
-        window.showCard(null, window.card.articleTempElement, false);
+        window.showCard(null, window.card.articleElement, false);
       } else {
-        window.showCard(window.data.adverts[clickedElement.dataset.number], window.card.articleTempElement, true);
+        window.showCard(window.data.adverts[clickedElement.dataset.number], window.card.articleElement, true);
         window.card.addAdvertEscEvent();
       }
     }
@@ -74,7 +74,7 @@
       var activePinElement = document.querySelector('.map__pin--active');
 
       if (activePinElement !== null && activePinElement.hasAttribute('hidden')) {
-        window.showCard(null, window.card.articleTempElement, false);
+        window.showCard(null, window.card.articleElement, false);
         activePinElement.classList.remove('map__pin--active');
       }
     });
@@ -85,17 +85,12 @@
   var addMapPins = function (advertsArray) {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < advertsArray.length; i++) {
-      var button = document.createElement('button');
+      var button = window.card.buttonElement.cloneNode(true);
       button.style.left = '' + (advertsArray[i].location.x - MAP_PIN_WIDTH_HALF) + 'px';
       button.style.top = '' + (advertsArray[i].location.y - MAP_PIN_HEIGHT_PLUS10) + 'px';
-      button.className = 'map__pin';
       button.dataset.number = i;
-      var imageElement = document.createElement('img');
+      var imageElement = button.querySelector('img');
       imageElement.src = advertsArray[i].author.avatar;
-      imageElement.style.width = '40px';
-      imageElement.style.height = '40px';
-      imageElement.style.draggable = false;
-      button.appendChild(imageElement);
       fragment.appendChild(button);
     }
     var mapPinsBlockElement = document.querySelector('.map__pins');

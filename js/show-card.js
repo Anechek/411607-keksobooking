@@ -51,12 +51,8 @@
         fragment.appendChild(liElement);
       });
       featuresElement.appendChild(fragment);
-      element.children[0].removeAttribute('hidden', '');
-      element.children[1].removeAttribute('hidden', '');
       element.removeAttribute('hidden', '');
     } else {
-      element.children[0].setAttribute('hidden', '');
-      element.children[1].setAttribute('hidden', '');
       element.setAttribute('hidden', '');
     }
   };

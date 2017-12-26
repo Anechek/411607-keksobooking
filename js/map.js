@@ -141,7 +141,7 @@
     var clickedElement = evt.currentTarget;
     clickedElement.classList.add('map__pin--active');
     window.form.noticeElement.classList.remove('notice__form--disabled');
-    window.showCard(null, window.card.articleTempElement, false);
+    window.showCard(null, window.card.articleElement, false);
     window.pin.addMapPins(window.data.adverts);
     mapPinElements = document.querySelectorAll('.map__pin');
     window.pin.addHandlersForAllButtons(mapPinElements);
