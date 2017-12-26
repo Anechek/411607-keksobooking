@@ -6,6 +6,8 @@
 
   var onPopupCloseClick = function () {
     window.pin.removeActive();
+    articleElement.children[0].setAttribute('hidden', '');
+    articleElement.children[1].setAttribute('hidden', '');
     articleElement.setAttribute('hidden', '');
     document.removeEventListener('keydown', onAdvertEscPress);
   };
@@ -14,6 +16,8 @@
 
   var onAdvertEscPress = function (evt) {
     if (evt.keyCode === ESC_KEYCODE) {
+      articleElement.children[0].setAttribute('hidden', '');
+      articleElement.children[1].setAttribute('hidden', '');
       articleElement.setAttribute('hidden', '');
       window.pin.removeActive();
     }
@@ -24,6 +28,8 @@
 
   // Убираем с экрана объявление, которое появляется в начале
 
+  articleTemplateElement.children[0].setAttribute('hidden', '');
+  articleTemplateElement.children[1].setAttribute('hidden', '');
   articleTemplateElement.setAttribute('hidden', '');
 
   // Под объявлением оказался еще один баттон. Скрываем его тоже.
