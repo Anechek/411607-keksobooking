@@ -63,7 +63,7 @@
       var priceType = form.elements['housing-price'].value;
       var rooms = form.elements['housing-rooms'].value;
       var guests = form.elements['housing-guests'].value;
-      var features = getCheckedInput(form.elements['housing-features'].elements);
+      var features = getCheckedInput(form.elements.features);
 
       // Показываем только те пины, которые соответствуют фильтру 
 
